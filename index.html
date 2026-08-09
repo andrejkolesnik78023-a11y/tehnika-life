@@ -2,14 +2,20 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
 
 <title>Техника Лайф</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -17,12 +23,54 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #0b0d10;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background:
+    radial-gradient(circle at 15% 10%, rgba(43,142,234,.22), transparent 28%),
+    radial-gradient(circle at 85% 25%, rgba(0,174,255,.12), transparent 25%),
+    radial-gradient(circle at 50% 90%, rgba(37,100,180,.12), transparent 30%),
+    #07090d;
+
   color: white;
   min-height: 100vh;
   padding-bottom: 90px;
+  overflow-x: hidden;
+}
+
+/* ФОНОВЫЕ СВЕТЯЩИЕСЯ КРУГИ */
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: .18;
+  pointer-events: none;
+  z-index: -1;
+}
+
+body::before {
+  background: #168cff;
+  top: 120px;
+  left: -100px;
+}
+
+body::after {
+  background: #0066ff;
+  right: -100px;
+  bottom: 150px;
 }
 
 button {
@@ -32,127 +80,421 @@ button {
 }
 
 .container {
-  max-width: 600px;
+  width: 100%;
+  max-width: 620px;
   margin: auto;
-  padding: 18px 16px;
+  padding: 14px 16px;
 }
 
-.page {
-  display: none;
+/* =========================
+   ВЕРХНЯЯ ПОЛОСА
+========================= */
+
+.top-ticker {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  margin-bottom: 15px;
+  backdrop-filter: blur(18px);
 }
 
-.page.active {
-  display: block;
+.ticker-track {
+  display: inline-flex;
+  padding: 9px 0;
+  animation: ticker 18s linear infinite;
 }
+
+.ticker-text {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  padding-right: 60px;
+  color: #dfefff;
+}
+
+.ticker-text span {
+  color: #4da3ff;
+}
+
+@keyframes ticker {
+
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+
+}
+
+/* =========================
+   HEADER
+========================= */
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .logo {
-  font-size: 23px;
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -.8px;
 }
 
 .logo span {
   color: #4da3ff;
 }
 
+.logo-sub {
+  display: block;
+  font-size: 9px;
+  color: #6f7885;
+  letter-spacing: 2px;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
 .cart-top {
   position: relative;
-  width: 45px;
-  height: 45px;
-  border-radius: 14px;
-  background: #171a20;
+  width: 47px;
+  height: 47px;
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.10),
+      rgba(255,255,255,.035)
+    );
+
+  border: 1px solid rgba(255,255,255,.09);
   color: white;
   font-size: 21px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.25);
+
+  transition: .2s;
+}
+
+.cart-top:active {
+  transform: scale(.92);
 }
 
 .cart-count {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #4da3ff;
-  width: 20px;
-  height: 20px;
+  top: -5px;
+  right: -5px;
+
+  background: #2b8eea;
+  color: white;
+
+  width: 21px;
+  height: 21px;
+
   border-radius: 50%;
-  font-size: 12px;
+
+  font-size: 11px;
   display: none;
+
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+
+  font-weight: 800;
+
+  box-shadow:
+    0 0 15px rgba(43,142,234,.7);
 }
 
-/* BANNER */
+/* =========================
+   ГЛАВНЫЙ БАННЕР
+========================= */
 
 .banner {
-  background: linear-gradient(135deg, #1769aa, #4da3ff);
-  border-radius: 24px;
-  padding: 25px 20px;
-  margin-bottom: 20px;
+  position: relative;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(20,91,155,.95),
+      rgba(43,142,234,.92)
+    );
+
+  border-radius: 28px;
+
+  padding: 26px 21px;
+
+  margin-bottom: 16px;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(255,255,255,.12);
+
+  box-shadow:
+    0 20px 50px rgba(0,80,180,.25);
+}
+
+.banner::before {
+  content: "";
+  position: absolute;
+
+  width: 180px;
+  height: 180px;
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.13);
+
+  right: -60px;
+  top: -70px;
+
+  filter: blur(2px);
+}
+
+.banner::after {
+  content: "⚡";
+
+  position: absolute;
+
+  right: 18px;
+  bottom: -20px;
+
+  font-size: 100px;
+
+  opacity: .08;
+
+  transform: rotate(-15deg);
 }
 
 .banner-small {
-  font-size: 13px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
   opacity: .85;
   margin-bottom: 8px;
 }
 
 .banner h1 {
-  font-size: 28px;
-  line-height: 1.1;
-  margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
+
+  font-size: 29px;
+  line-height: 1.08;
+
+  margin-bottom: 9px;
+
+  letter-spacing: -.7px;
 }
 
 .banner p {
-  font-size: 14px;
-  opacity: .9;
+  position: relative;
+  z-index: 2;
+
+  font-size: 13px;
+  line-height: 1.4;
+
+  color: rgba(255,255,255,.86);
 }
 
-/* SEARCH */
+/* =========================
+   АКЦИЯ
+========================= */
+
+.promo {
+  position: relative;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(20,24,31,.95),
+      rgba(14,18,25,.88)
+    );
+
+  border-radius: 22px;
+
+  padding: 17px;
+
+  margin-bottom: 18px;
+
+  border: 1px solid rgba(255,255,255,.09);
+
+  overflow: hidden;
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,.22);
+}
+
+.promo::before {
+  content: "";
+
+  position: absolute;
+
+  width: 180px;
+  height: 180px;
+
+  background: #2b8eea;
+
+  border-radius: 50%;
+
+  right: -100px;
+  top: -100px;
+
+  filter: blur(70px);
+
+  opacity: .35;
+}
+
+.promo-title {
+  position: relative;
+  z-index: 2;
+
+  font-size: 11px;
+  color: #4da3ff;
+
+  font-weight: 900;
+
+  letter-spacing: 1px;
+
+  margin-bottom: 5px;
+}
+
+.promo h2 {
+  position: relative;
+  z-index: 2;
+
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.promo p {
+  position: relative;
+  z-index: 2;
+
+  color: #9ba4b1;
+  font-size: 12px;
+}
+
+.promo-date {
+  position: relative;
+  z-index: 2;
+
+  display: inline-block;
+
+  margin-top: 10px;
+
+  padding: 7px 10px;
+
+  border-radius: 9px;
+
+  background: rgba(43,142,234,.13);
+
+  color: #72bdff;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* =========================
+   ПОИСК
+========================= */
 
 .search {
   width: 100%;
-  background: #171a20;
-  border: 1px solid #252a33;
-  border-radius: 16px;
+
+  background:
+    rgba(20,23,29,.88);
+
+  border: 1px solid rgba(255,255,255,.08);
+
+  border-radius: 17px;
+
   padding: 15px;
+
   color: white;
+
   font-size: 15px;
+
   outline: none;
+
   margin-bottom: 20px;
+
+  backdrop-filter: blur(16px);
+
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.03);
+}
+
+.search:focus {
+  border-color: rgba(77,163,255,.45);
 }
 
 .search::placeholder {
-  color: #777d87;
+  color: #6d7580;
 }
 
-/* CATEGORIES */
+/* =========================
+   ЗАГОЛОВКИ
+========================= */
 
 .section-title {
-  margin: 22px 0 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin: 20px 0 12px;
 }
 
 .section-title h2 {
   font-size: 20px;
+  letter-spacing: -.4px;
 }
+
+/* =========================
+   КАТЕГОРИИ
+========================= */
 
 .categories {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 9px;
 }
 
 .category {
-  background: #171a20;
-  border: 1px solid #242932;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(28,32,40,.95),
+      rgba(17,20,26,.9)
+    );
+
+  border: 1px solid rgba(255,255,255,.07);
+
   border-radius: 18px;
-  padding: 16px 7px;
+
+  padding: 15px 6px;
+
   color: white;
+
   text-align: center;
+
+  transition: .2s;
+
+  box-shadow:
+    0 8px 25px rgba(0,0,0,.15);
+}
+
+.category:active {
+  transform: scale(.95);
 }
 
 .category-icon {
@@ -161,93 +503,202 @@ button {
 }
 
 .category-name {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
+  color: #dbe0e8;
 }
 
-/* PRODUCTS */
+/* =========================
+   ТОВАРЫ
+========================= */
 
 .products {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
   gap: 12px;
 }
 
 .product {
-  background: #171a20;
-  border: 1px solid #242932;
-  border-radius: 20px;
+  position: relative;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(27,31,39,.96),
+      rgba(14,17,22,.96)
+    );
+
+  border: 1px solid rgba(255,255,255,.07);
+
+  border-radius: 21px;
+
   overflow: hidden;
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.22);
+
+  transition: .2s;
+}
+
+.product:active {
+  transform: scale(.98);
 }
 
 .product-image {
-  height: 150px;
+  height: 145px;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #20242c, #111318);
-  font-size: 65px;
+
+  position: relative;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(43,142,234,.16),
+      transparent 60%
+    ),
+
+    linear-gradient(
+      145deg,
+      #202631,
+      #101319
+    );
+}
+
+.product-image::after {
+  content: "";
+
+  position: absolute;
+
+  width: 85px;
+  height: 85px;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(77,163,255,.12);
+
+  box-shadow:
+    0 0 40px rgba(43,142,234,.12);
+}
+
+.product-emoji {
+  position: relative;
+  z-index: 2;
+
+  font-size: 62px;
+
+  filter:
+    drop-shadow(
+      0 12px 15px rgba(0,0,0,.35)
+    );
 }
 
 .product-info {
-  padding: 12px;
+  padding: 13px;
 }
 
 .product-name {
   font-size: 14px;
-  font-weight: 600;
+
+  font-weight: 700;
+
   min-height: 38px;
+
+  line-height: 1.3;
+
+  color: #f4f7fb;
 }
 
 .product-price {
   font-size: 18px;
-  font-weight: 800;
+
+  font-weight: 900;
+
   margin: 9px 0;
+
+  letter-spacing: -.3px;
 }
 
-.product-button,
-.order-button,
-.admin-button {
+.product-button {
   width: 100%;
-  background: #2b8eea;
+
+  background:
+    linear-gradient(
+      135deg,
+      #2b8eea,
+      #1478d1
+    );
+
   color: white;
-  padding: 12px;
+
+  padding: 11px;
+
   border-radius: 12px;
-  font-weight: 700;
+
+  font-weight: 800;
+
+  font-size: 12px;
+
+  box-shadow:
+    0 7px 18px rgba(43,142,234,.20);
+
+  transition: .2s;
 }
 
-.delete-button {
-  width: 100%;
-  background: #d83a4a;
-  color: white;
-  padding: 10px;
-  border-radius: 10px;
-  margin-top: 7px;
-  font-weight: 700;
+.product-button:active {
+  transform: scale(.96);
 }
 
-/* NAV */
+/* =========================
+   НИЖНЕЕ МЕНЮ
+========================= */
 
 .bottom-nav {
   position: fixed;
+
   bottom: 0;
+
   left: 0;
   right: 0;
-  height: 72px;
-  background: rgba(15,17,21,.97);
-  border-top: 1px solid #252932;
+
+  height: 74px;
+
+  background:
+    rgba(10,12,16,.94);
+
+  border-top:
+    1px solid rgba(255,255,255,.08);
+
   display: flex;
+
   justify-content: space-around;
+
   align-items: center;
+
   z-index: 100;
-  backdrop-filter: blur(12px);
+
+  backdrop-filter:
+    blur(20px);
 }
 
 .nav-button {
   background: transparent;
-  color: #777d87;
-  font-size: 12px;
+
+  color: #6d7580;
+
+  font-size: 11px;
+
   text-align: center;
+
+  min-width: 75px;
+
+  transition: .2s;
 }
 
 .nav-button.active {
@@ -256,30 +707,86 @@ button {
 
 .nav-icon {
   font-size: 22px;
+
   display: block;
-  margin-bottom: 2px;
+
+  margin-bottom: 3px;
 }
 
-/* CART */
+/* =========================
+   СТРАНИЦЫ
+========================= */
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+
+  animation:
+    pageIn .25s ease;
+}
+
+@keyframes pageIn {
+
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+/* =========================
+   КОРЗИНА
+========================= */
 
 .cart-item {
   display: flex;
+
   align-items: center;
+
   gap: 12px;
-  background: #171a20;
+
+  background:
+    rgba(23,26,32,.95);
+
   padding: 12px;
-  border-radius: 16px;
+
+  border-radius: 17px;
+
   margin-bottom: 10px;
+
+  border:
+    1px solid rgba(255,255,255,.06);
 }
 
 .cart-item-icon {
   width: 60px;
   height: 60px;
-  border-radius: 13px;
-  background: #22262e;
+
+  flex-shrink: 0;
+
+  border-radius: 14px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(43,142,234,.14),
+      transparent
+    ),
+    #20242c;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
+
   font-size: 30px;
 }
 
@@ -289,75 +796,142 @@ button {
 
 .cart-item-name {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .cart-item-price {
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 900;
   margin-top: 5px;
 }
 
 .quantity {
   display: flex;
+
   align-items: center;
+
   gap: 8px;
+
   margin-top: 7px;
 }
 
 .quantity button {
   width: 27px;
   height: 27px;
+
   border-radius: 8px;
+
   background: #292e37;
+
   color: white;
+
+  font-weight: 800;
 }
 
 .total-box {
-  background: #171a20;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(27,31,39,.98),
+      rgba(15,18,23,.98)
+    );
+
   border-radius: 20px;
+
   padding: 18px;
+
   margin-top: 20px;
+
+  border:
+    1px solid rgba(255,255,255,.07);
 }
 
 .total-row {
   display: flex;
+
   justify-content: space-between;
+
   margin-bottom: 14px;
+
   color: #aeb4bd;
+
+  font-size: 14px;
 }
 
 .total-row:last-child {
   margin-bottom: 0;
+
   color: white;
+
   font-size: 21px;
-  font-weight: 800;
+
+  font-weight: 900;
 }
 
 .order-button {
-  margin-top: 15px;
+  width: 100%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #2b8eea,
+      #1478d1
+    );
+
+  color: white;
+
   padding: 16px;
-  font-size: 16px;
+
+  border-radius: 15px;
+
+  margin-top: 15px;
+
+  font-size: 15px;
+
+  font-weight: 900;
+
+  box-shadow:
+    0 10px 25px rgba(43,142,234,.22);
 }
+
+/* =========================
+   ПУСТО
+========================= */
 
 .empty {
   text-align: center;
+
   padding: 70px 20px;
+
   color: #858b95;
 }
 
 .empty-icon {
   font-size: 55px;
+
   margin-bottom: 15px;
 }
 
-/* PROFILE */
+/* =========================
+   ПРОФИЛЬ
+========================= */
 
 .profile-card {
-  background: #171a20;
-  border-radius: 22px;
-  padding: 22px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(27,31,39,.97),
+      rgba(15,18,23,.97)
+    );
+
+  border-radius: 23px;
+
+  padding: 24px;
+
   text-align: center;
+
+  border:
+    1px solid rgba(255,255,255,.07);
 }
 
 .profile-icon {
@@ -367,7 +941,7 @@ button {
 
 .profile-name {
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .profile-text {
@@ -378,102 +952,78 @@ button {
 
 .contact-button {
   display: block;
+
   width: 100%;
-  background: #2b8eea;
+
+  background:
+    linear-gradient(
+      135deg,
+      #2b8eea,
+      #1478d1
+    );
+
   color: white;
+
   padding: 15px;
+
   border-radius: 15px;
+
   margin-top: 20px;
-  font-weight: 700;
+
+  font-weight: 800;
+
   text-decoration: none;
 }
 
-/* ADMIN */
+/* =========================
+   ЗАГРУЗКА
+========================= */
 
-.admin-card {
-  background: #171a20;
-  border: 1px solid #252a33;
-  border-radius: 20px;
-  padding: 16px;
-  margin-bottom: 14px;
+.loading {
+  grid-column: 1 / -1;
+
+  text-align: center;
+
+  padding: 50px 20px;
+
+  color: #7d8794;
+
+  font-size: 13px;
 }
 
-.admin-card h3 {
-  margin-bottom: 15px;
+.loader {
+  width: 35px;
+  height: 35px;
+
+  border: 3px solid rgba(255,255,255,.1);
+
+  border-top-color: #4da3ff;
+
+  border-radius: 50%;
+
+  margin: 0 auto 14px;
+
+  animation:
+    spin .8s linear infinite;
 }
 
-.admin-input {
-  width: 100%;
-  background: #0f1115;
-  border: 1px solid #292e37;
-  color: white;
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 10px;
-  outline: none;
-  font-size: 15px;
-}
+@keyframes spin {
 
-.admin-select {
-  width: 100%;
-  background: #0f1115;
-  border: 1px solid #292e37;
-  color: white;
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 10px;
-  font-size: 15px;
-}
+  to {
+    transform: rotate(360deg);
+  }
 
-.admin-product {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #0f1115;
-  border-radius: 14px;
-  padding: 12px;
-  margin-bottom: 10px;
-}
-
-.admin-product-icon {
-  font-size: 35px;
-}
-
-.admin-product-info {
-  flex: 1;
-}
-
-.admin-product-name {
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.admin-product-price {
-  color: #4da3ff;
-  margin-top: 4px;
-  font-weight: 700;
-}
-
-.admin-title {
-  font-size: 25px;
-  font-weight: 800;
-  margin-bottom: 18px;
-}
-
-.admin-warning {
-  background: #2b2020;
-  border: 1px solid #653333;
-  padding: 14px;
-  border-radius: 14px;
-  color: #ffb0b0;
-  margin-bottom: 15px;
 }
 
 @media (min-width: 550px) {
+
   .products {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns:
+      repeat(3, 1fr);
   }
+
 }
+
 </style>
 </head>
 
@@ -481,83 +1031,262 @@ button {
 
 <div class="container">
 
+<!-- БЕГУЩАЯ НАДПИСЬ -->
+
+<div class="top-ticker">
+
+  <div class="ticker-track">
+
+    <div class="ticker-text">
+      ⚡ <span>ТЕХНИКА ЛАЙФ</span> — современные гаджеты по хорошим ценам
+    </div>
+
+    <div class="ticker-text">
+      💻 <span>АКЦИЯ ДО 31 ДЕКАБРЯ</span> — специальные цены на ноутбуки
+    </div>
+
+    <div class="ticker-text">
+      🚀 Новые товары регулярно появляются в магазине
+    </div>
+
+    <div class="ticker-text">
+      ⚡ <span>ТЕХНИКА ЛАЙФ</span> — современные гаджеты по хорошим ценам
+    </div>
+
+  </div>
+
+</div>
+
+
 <!-- ГЛАВНАЯ -->
 
 <div id="homePage" class="page active">
 
-<div class="header">
-<div class="logo">⚡ Техника <span>Лайф</span></div>
+  <div class="header">
 
-<button class="cart-top" onclick="openCart()">
-🛒
-<span id="cartCount" class="cart-count">0</span>
-</button>
-</div>
+    <div>
 
-<div class="banner">
-<div class="banner-small">ОНЛАЙН-МАГАЗИН ТЕХНИКИ</div>
+      <div class="logo">
+        ⚡ Техника <span>Лайф</span>
+      </div>
 
-<h1>
-Техника для жизни<br>
-по хорошим ценам
-</h1>
+      <div class="logo-sub">
+        TECH • GADGETS • LIFE
+      </div>
 
-<p>
-Смартфоны, планшеты, гаджеты и аксессуары
-</p>
-</div>
+    </div>
 
-<input
-id="searchInput"
-class="search"
-type="text"
-placeholder="🔎 Поиск товара..."
-oninput="searchProducts()"
->
+    <button
+      class="cart-top"
+      onclick="openCart()"
+    >
 
-<div class="section-title">
-<h2>📂 Категории</h2>
-</div>
+      🛒
 
-<div class="categories">
+      <span
+        id="cartCount"
+        class="cart-count"
+      >
+        0
+      </span>
 
-<button class="category" onclick="filterCategory('Смартфоны')">
-<div class="category-icon">📱</div>
-<div class="category-name">Смартфоны</div>
-</button>
+    </button>
 
-<button class="category" onclick="filterCategory('Планшеты')">
-<div class="category-icon">📲</div>
-<div class="category-name">Планшеты</div>
-</button>
+  </div>
 
-<button class="category" onclick="filterCategory('Ноутбуки')">
-<div class="category-icon">💻</div>
-<div class="category-name">Ноутбуки</div>
-</button>
 
-<button class="category" onclick="filterCategory('Наушники')">
-<div class="category-icon">🎧</div>
-<div class="category-name">Наушники</div>
-</button>
+  <!-- ГЛАВНЫЙ БАННЕР -->
 
-<button class="category" onclick="filterCategory('Часы')">
-<div class="category-icon">⌚</div>
-<div class="category-name">Смарт-часы</div>
-</button>
+  <div class="banner">
 
-<button class="category" onclick="filterCategory('Аксессуары')">
-<div class="category-icon">🔌</div>
-<div class="category-name">Аксессуары</div>
-</button>
+    <div class="banner-small">
+      ОНЛАЙН-МАГАЗИН ТЕХНИКИ
+    </div>
 
-</div>
+    <h1>
+      Техника для жизни<br>
+      по хорошим ценам
+    </h1>
 
-<div class="section-title">
-<h2>🔥 Популярное</h2>
-</div>
+    <p>
+      Смартфоны, ноутбуки, планшеты,
+      наушники и полезные гаджеты.
+    </p>
 
-<div id="products" class="products"></div>
+  </div>
+
+
+  <!-- АКЦИЯ -->
+
+  <div class="promo">
+
+    <div class="promo-title">
+      🔥 ГОРЯЧЕЕ ПРЕДЛОЖЕНИЕ
+    </div>
+
+    <h2>
+      💻 Акция на ноутбуки
+    </h2>
+
+    <p>
+      Специальные цены на ноутбуки
+      действуют до конца года.
+    </p>
+
+    <div class="promo-date">
+      🗓 До 31 декабря 2026 года
+    </div>
+
+  </div>
+
+
+  <!-- ПОИСК -->
+
+  <input
+    id="searchInput"
+    class="search"
+    type="text"
+    placeholder="🔎 Поиск товара..."
+    oninput="searchProducts()"
+  >
+
+
+  <!-- КАТЕГОРИИ -->
+
+  <div class="section-title">
+
+    <h2>
+      📂 Категории
+    </h2>
+
+  </div>
+
+
+  <div class="categories">
+
+    <button
+      class="category"
+      onclick="filterCategory('Смартфоны')"
+    >
+
+      <div class="category-icon">
+        📱
+      </div>
+
+      <div class="category-name">
+        Смартфоны
+      </div>
+
+    </button>
+
+
+    <button
+      class="category"
+      onclick="filterCategory('Планшеты')"
+    >
+
+      <div class="category-icon">
+        📲
+      </div>
+
+      <div class="category-name">
+        Планшеты
+      </div>
+
+    </button>
+
+
+    <button
+      class="category"
+      onclick="filterCategory('Ноутбуки')"
+    >
+
+      <div class="category-icon">
+        💻
+      </div>
+
+      <div class="category-name">
+        Ноутбуки
+      </div>
+
+    </button>
+
+
+    <button
+      class="category"
+      onclick="filterCategory('Наушники')"
+    >
+
+      <div class="category-icon">
+        🎧
+      </div>
+
+      <div class="category-name">
+        Наушники
+      </div>
+
+    </button>
+
+
+    <button
+      class="category"
+      onclick="filterCategory('Часы')"
+    >
+
+      <div class="category-icon">
+        ⌚
+      </div>
+
+      <div class="category-name">
+        Смарт-часы
+      </div>
+
+    </button>
+
+
+    <button
+      class="category"
+      onclick="filterCategory('Аксессуары')"
+    >
+
+      <div class="category-icon">
+        🔌
+      </div>
+
+      <div class="category-name">
+        Аксессуары
+      </div>
+
+    </button>
+
+  </div>
+
+
+  <!-- ВИТРИНА -->
+
+  <div class="section-title">
+
+    <h2>
+      🔥 Витрина
+    </h2>
+
+  </div>
+
+
+  <div
+    id="products"
+    class="products"
+  >
+
+    <div class="loading">
+
+      <div class="loader"></div>
+
+      Загружаем товары...
+
+    </div>
+
+  </div>
 
 </div>
 
@@ -566,13 +1295,17 @@ oninput="searchProducts()"
 
 <div id="cartPage" class="page">
 
-<div class="header">
-<div class="logo">🛒 Корзина</div>
-</div>
+  <div class="header">
 
-<div id="cartItems"></div>
+    <div class="logo">
+      🛒 Корзина
+    </div>
 
-<div id="cartTotal"></div>
+  </div>
+
+  <div id="cartItems"></div>
+
+  <div id="cartTotal"></div>
 
 </div>
 
@@ -581,102 +1314,40 @@ oninput="searchProducts()"
 
 <div id="profilePage" class="page">
 
-<div class="header">
-<div class="logo">👤 Профиль</div>
-</div>
+  <div class="header">
 
-<div class="profile-card">
+    <div class="logo">
+      👤 Профиль
+    </div>
 
-<div class="profile-icon">👤</div>
-
-<div id="profileName" class="profile-name">
-Покупатель
-</div>
-
-<div class="profile-text">
-Добро пожаловать в Техника Лайф ⚡
-</div>
-
-<a
-href="https://t.me/kar_y0"
-class="contact-button"
->
-💬 Связаться с продавцом
-</a>
-
-</div>
-
-</div>
+  </div>
 
 
-<!-- АДМИНКА -->
+  <div class="profile-card">
 
-<div id="adminPage" class="page">
+    <div class="profile-icon">
+      👤
+    </div>
 
-<div class="admin-title">
-⚙️ Админ-панель
-</div>
+    <div
+      id="profileName"
+      class="profile-name"
+    >
+      Покупатель
+    </div>
 
-<div class="admin-warning">
-🔐 Доступ разрешён только владельцу магазина.
-</div>
+    <div class="profile-text">
+      Добро пожаловать в Техника Лайф ⚡
+    </div>
 
-<div class="admin-card">
+    <a
+      href="https://t.me/kar_y0"
+      class="contact-button"
+    >
+      💬 Связаться с продавцом
+    </a>
 
-<h3>➕ Добавить товар</h3>
-
-<input
-id="adminName"
-class="admin-input"
-placeholder="Название товара"
->
-
-<input
-id="adminPrice"
-class="admin-input"
-type="number"
-placeholder="Цена в рублях"
->
-
-<select id="adminCategory" class="admin-select">
-
-<option value="Смартфоны">📱 Смартфоны</option>
-
-<option value="Планшеты">📲 Планшеты</option>
-
-<option value="Ноутбуки">💻 Ноутбуки</option>
-
-<option value="Наушники">🎧 Наушники</option>
-
-<option value="Часы">⌚ Смарт-часы</option>
-
-<option value="Аксессуары">🔌 Аксессуары</option>
-
-</select>
-
-<input
-id="adminIcon"
-class="admin-input"
-placeholder="Эмодзи товара 📱"
->
-
-<button
-class="admin-button"
-onclick="addProduct()"
->
-➕ Добавить товар
-</button>
-
-</div>
-
-
-<div class="admin-card">
-
-<h3>📦 Товары</h3>
-
-<div id="adminProducts"></div>
-
-</div>
+  </div>
 
 </div>
 
@@ -687,46 +1358,55 @@ onclick="addProduct()"
 
 <div class="bottom-nav">
 
-<button
-class="nav-button active"
-onclick="openPage('homePage', this)"
->
-<span class="nav-icon">🏠</span>
-Главная
-</button>
+  <button
+    class="nav-button active"
+    onclick="openPage('homePage', this)"
+  >
 
-<button
-class="nav-button"
-onclick="openPage('cartPage', this); renderCart()"
->
-<span class="nav-icon">🛒</span>
-Корзина
-</button>
+    <span class="nav-icon">
+      🏠
+    </span>
 
-<button
-class="nav-button"
-onclick="openPage('profilePage', this)"
->
-<span class="nav-icon">👤</span>
-Профиль
-</button>
+    Главная
 
-<button
-id="adminNav"
-class="nav-button"
-style="display:none"
-onclick="openPage('adminPage', this); renderAdminProducts()"
->
-<span class="nav-icon">⚙️</span>
-Админка
-</button>
+  </button>
+
+
+  <button
+    class="nav-button"
+    onclick="openPage('cartPage', this); renderCart()"
+  >
+
+    <span class="nav-icon">
+      🛒
+    </span>
+
+    Корзина
+
+  </button>
+
+
+  <button
+    class="nav-button"
+    onclick="openPage('profilePage', this)"
+  >
+
+    <span class="nav-icon">
+      👤
+    </span>
+
+    Профиль
+
+  </button>
 
 </div>
 
 
 <script>
 
-/* TELEGRAM */
+/* ==========================================
+   TELEGRAM
+========================================== */
 
 const tg = window.Telegram.WebApp;
 
@@ -734,904 +1414,742 @@ tg.ready();
 tg.expand();
 
 
-/* SUPABASE */
+/* ==========================================
+   SUPABASE
+========================================== */
 
 const SUPABASE_URL =
-"https://krdhfzbinbxyketfcrdg.supabase.co";
+  "https://krdhfzbinbxyketfcrdg.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_nDSB-nLt5u2FVp0GH8MffQ_kaJEpB0L";
+  "sb_publishable_nDSB-nLt5u2FVp0GH8MffQ_kaJEpB0L";
+
 
 const supabaseClient =
-window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
-/* АДМИН */
-
-const ADMIN_ID = "756164773";
-
-let currentUserId = "";
-
-if (
-tg.initDataUnsafe &&
-tg.initDataUnsafe.user
-) {
-
-currentUserId =
-String(tg.initDataUnsafe.user.id);
-
-document.getElementById("profileName").textContent =
-tg.initDataUnsafe.user.first_name ||
-"Покупатель";
-
-}
-
-
-/* ПРОВЕРКА АДМИНА */
-
-function checkAdmin() {
-
-if (currentUserId === ADMIN_ID) {
-
-document.getElementById("adminNav").style.display =
-"block";
-
-console.log("Админ подтверждён");
-
-} else {
-
-console.log("Обычный пользователь");
-
-}
-
-}
-
-
-/* ТОВАРЫ */
+/* ==========================================
+   ТОВАРЫ
+========================================== */
 
 const products = [];
+
 
 let cart = [];
 
 
-/* ЗАГРУЗКА ТОВАРОВ */
+/* ==========================================
+   ЗАГРУЗКА ТОВАРОВ
+========================================== */
 
 async function loadProducts() {
 
-const {
-data,
-error
-} = await supabaseClient
-.from("products")
-.select("*")
-.order("id", {
-ascending: true
-});
+  const container =
+    document.getElementById("products");
+
+  try {
+
+    const { data, error } =
+      await supabaseClient
+        .from("products")
+        .select("*")
+        .order("id", {
+          ascending: true
+        });
 
 
-if (error) {
+    if (error) {
 
-console.error(
-"Ошибка загрузки товаров:",
-error
-);
+      console.error(
+        "Ошибка Supabase:",
+        error
+      );
 
-return;
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">
+            ⚠️
+          </div>
 
-}
+          Не удалось загрузить товары
+        </div>
+      `;
 
-
-products.length = 0;
-
-
-data.forEach(product => {
-
-products.push({
-
-id: product.id,
-
-name: product.name,
-
-price: Number(product.price),
-
-category: product.category,
-
-icon: product.icon || "📦"
-
-});
-
-});
+      return;
+    }
 
 
-renderProducts();
-
-updateCartCount();
-
-if (currentUserId === ADMIN_ID) {
-
-renderAdminProducts();
-
-}
-
-}
+    products.length = 0;
 
 
-/* ПОКАЗ ТОВАРОВ */
+    if (data && data.length > 0) {
 
-function renderProducts(list = products) {
+      data.forEach(product => {
 
-const container =
-document.getElementById("products");
+        products.push({
 
-container.innerHTML = "";
+          id: product.id,
 
-if (list.length === 0) {
+          name: product.name,
 
-container.innerHTML = `
-<div class="empty">
+          price: Number(product.price),
 
-<div class="empty-icon">
-📦
-</div>
+          category: product.category,
 
-Товаров пока нет
+          icon:
+            product.icon ||
+            "📦"
 
-</div>
-`;
+        });
 
-return;
+      });
+
+    }
+
+
+    renderProducts();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Ошибка:",
+      error
+    );
+
+  }
 
 }
 
 
-list.forEach(product => {
+/* ==========================================
+   ВИТРИНА
+========================================== */
 
-container.innerHTML += `
+function renderProducts(
+  list = products
+) {
 
-<div class="product">
+  const container =
+    document.getElementById("products");
 
-<div class="product-image">
-${product.icon}
-</div>
+  container.innerHTML = "";
 
-<div class="product-info">
 
-<div class="product-name">
-${product.name}
-</div>
+  if (list.length === 0) {
 
-<div class="product-price">
-${product.price.toLocaleString("ru-RU")} ₽
-</div>
+    container.innerHTML = `
 
-<button
-class="product-button"
-onclick="addToCart(${product.id})"
->
-🛒 В корзину
-</button>
+      <div class="empty">
 
-</div>
+        <div class="empty-icon">
+          🔎
+        </div>
 
-</div>
+        Товар не найден
 
-`;
+      </div>
 
-});
+    `;
+
+    return;
+  }
+
+
+  list.forEach(product => {
+
+    container.innerHTML += `
+
+      <div class="product">
+
+        <div class="product-image">
+
+          <div class="product-emoji">
+            ${product.icon}
+          </div>
+
+        </div>
+
+
+        <div class="product-info">
+
+          <div class="product-name">
+
+            ${product.name}
+
+          </div>
+
+
+          <div class="product-price">
+
+            ${product.price.toLocaleString("ru-RU")} ₽
+
+          </div>
+
+
+          <button
+            class="product-button"
+            onclick="addToCart(${product.id})"
+          >
+
+            🛒 В корзину
+
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
 
 }
 
 
-/* КОРЗИНА */
+/* ==========================================
+   КОРЗИНА
+========================================== */
 
 function addToCart(id) {
 
-const product =
-products.find(
-p => p.id === id
-);
-
-if (!product) return;
+  const product =
+    products.find(
+      p => p.id === id
+    );
 
 
-const existing =
-cart.find(
-p => p.id === id
-);
+  if (!product) return;
 
 
-if (existing) {
+  const existing =
+    cart.find(
+      p => p.id === id
+    );
 
-existing.quantity++;
 
-} else {
+  if (existing) {
 
-cart.push({
+    existing.quantity++;
 
-...product,
+  }
 
-quantity: 1
+  else {
 
-});
+    cart.push({
+
+      ...product,
+
+      quantity: 1
+
+    });
+
+  }
+
+
+  updateCartCount();
+
+
+  try {
+
+    tg.HapticFeedback
+      .impactOccurred("light");
+
+  }
+
+  catch (e) {}
 
 }
 
 
-updateCartCount();
-
-if (
-tg.HapticFeedback
-) {
-
-tg.HapticFeedback
-.impactOccurred("light");
-
-}
-
-}
-
-
-/* СЧЁТЧИК */
+/* ==========================================
+   СЧЁТЧИК КОРЗИНЫ
+========================================== */
 
 function updateCartCount() {
 
-const count =
-cart.reduce(
-(sum, item) =>
-sum + item.quantity,
-0
-);
+  const count =
+    cart.reduce(
+      (sum, item) =>
+        sum + item.quantity,
+      0
+    );
 
 
-const badge =
-document.getElementById(
-"cartCount"
-);
+  const badge =
+    document.getElementById(
+      "cartCount"
+    );
 
 
-badge.textContent = count;
+  badge.textContent =
+    count;
 
 
-badge.style.display =
-count > 0
-? "flex"
-: "none";
+  badge.style.display =
+    count > 0
+      ? "flex"
+      : "none";
 
 }
 
 
-/* ОТРИСОВКА КОРЗИНЫ */
+/* ==========================================
+   ОТРИСОВКА КОРЗИНЫ
+========================================== */
 
 function renderCart() {
 
-const container =
-document.getElementById(
-"cartItems"
-);
-
-const total =
-document.getElementById(
-"cartTotal"
-);
+  const container =
+    document.getElementById(
+      "cartItems"
+    );
 
 
-container.innerHTML = "";
+  const total =
+    document.getElementById(
+      "cartTotal"
+    );
 
 
-if (cart.length === 0) {
-
-container.innerHTML = `
-
-<div class="empty">
-
-<div class="empty-icon">
-🛒
-</div>
-
-Корзина пока пустая
-
-<br><br>
-
-Добавьте понравившийся товар
-
-</div>
-
-`;
-
-total.innerHTML = "";
-
-return;
-
-}
+  container.innerHTML = "";
 
 
-let sum = 0;
+  if (cart.length === 0) {
+
+    container.innerHTML = `
+
+      <div class="empty">
+
+        <div class="empty-icon">
+          🛒
+        </div>
+
+        Корзина пока пустая
+
+        <br><br>
+
+        Добавьте понравившийся товар
+
+      </div>
+
+    `;
+
+    total.innerHTML = "";
+
+    return;
+
+  }
 
 
-cart.forEach(item => {
-
-const itemTotal =
-item.price *
-item.quantity;
-
-sum += itemTotal;
+  let sum = 0;
 
 
-container.innerHTML += `
+  cart.forEach(item => {
 
-<div class="cart-item">
-
-<div class="cart-item-icon">
-${item.icon}
-</div>
-
-<div class="cart-item-info">
-
-<div class="cart-item-name">
-${item.name}
-</div>
-
-<div class="cart-item-price">
-${itemTotal.toLocaleString("ru-RU")} ₽
-</div>
-
-<div class="quantity">
-
-<button
-onclick="changeQuantity(${item.id}, -1)"
->
-−
-</button>
-
-<span>
-${item.quantity}
-</span>
-
-<button
-onclick="changeQuantity(${item.id}, 1)"
->
-+
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-`;
-
-});
+    sum +=
+      item.price *
+      item.quantity;
 
 
-total.innerHTML = `
+    container.innerHTML += `
 
-<div class="total-box">
+      <div class="cart-item">
 
-<div class="total-row">
-
-<span>
-Товары
-</span>
-
-<span>
-${sum.toLocaleString("ru-RU")} ₽
-</span>
-
-</div>
-
-<div class="total-row">
-
-<span>
-Итого
-</span>
-
-<span>
-${sum.toLocaleString("ru-RU")} ₽
-</span>
-
-</div>
-
-<button
-class="order-button"
-onclick="createOrder()"
->
-✅ Оформить заказ
-</button>
-
-</div>
-
-`;
-
-}
+        <div class="cart-item-icon">
+          ${item.icon}
+        </div>
 
 
-/* КОЛИЧЕСТВО */
+        <div class="cart-item-info">
 
-function changeQuantity(id, change) {
-
-const item =
-cart.find(
-p => p.id === id
-);
-
-if (!item) return;
+          <div class="cart-item-name">
+            ${item.name}
+          </div>
 
 
-item.quantity += change;
+          <div class="cart-item-price">
+
+            ${(item.price * item.quantity)
+              .toLocaleString("ru-RU")} ₽
+
+          </div>
 
 
-if (item.quantity <= 0) {
+          <div class="quantity">
 
-cart =
-cart.filter(
-p => p.id !== id
-);
+            <button
+              onclick="changeQuantity(${item.id}, -1)"
+            >
+              −
+            </button>
+
+
+            <span>
+              ${item.quantity}
+            </span>
+
+
+            <button
+              onclick="changeQuantity(${item.id}, 1)"
+            >
+              +
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+
+  total.innerHTML = `
+
+    <div class="total-box">
+
+      <div class="total-row">
+
+        <span>
+          Товары
+        </span>
+
+        <span>
+          ${sum.toLocaleString("ru-RU")} ₽
+        </span>
+
+      </div>
+
+
+      <div class="total-row">
+
+        <span>
+          Итого
+        </span>
+
+        <span>
+          ${sum.toLocaleString("ru-RU")} ₽
+        </span>
+
+      </div>
+
+
+      <button
+        class="order-button"
+        onclick="createOrder()"
+      >
+
+        ✅ Оформить заказ
+
+      </button>
+
+    </div>
+
+  `;
 
 }
 
 
-updateCartCount();
+/* ==========================================
+   КОЛИЧЕСТВО
+========================================== */
 
-renderCart();
+function changeQuantity(
+  id,
+  change
+) {
+
+  const item =
+    cart.find(
+      p => p.id === id
+    );
+
+
+  if (!item) return;
+
+
+  item.quantity += change;
+
+
+  if (item.quantity <= 0) {
+
+    cart =
+      cart.filter(
+        p => p.id !== id
+      );
+
+  }
+
+
+  updateCartCount();
+
+  renderCart();
 
 }
 
 
-/* ЗАКАЗ */
+/* ==========================================
+   ЗАКАЗ
+========================================== */
 
 function createOrder() {
 
-if (cart.length === 0)
-return;
+  if (cart.length === 0)
+    return;
 
 
-let text =
-"🛍 Новый заказ — Техника Лайф\n\n";
-
-let total = 0;
+  let text =
+    "🛍 Новый заказ — Техника Лайф%0A%0A";
 
 
-cart.forEach(item => {
-
-const itemTotal =
-item.price *
-item.quantity;
-
-total += itemTotal;
+  let total = 0;
 
 
-text +=
-`📦 ${item.name} × ${item.quantity} — ${itemTotal.toLocaleString("ru-RU")} ₽\n`;
+  cart.forEach(item => {
 
-});
-
-
-text +=
-`\n💰 Итого: ${total.toLocaleString("ru-RU")} ₽`;
-
-text +=
-"\n\nЗдравствуйте! Хочу оформить этот заказ.";
+    const itemTotal =
+      item.price *
+      item.quantity;
 
 
-const encoded =
-encodeURIComponent(text);
+    total += itemTotal;
 
 
-tg.showPopup({
+    text +=
+      `📦 ${item.name} × ${item.quantity} — ${itemTotal.toLocaleString("ru-RU")} ₽%0A`;
 
-title:
-"Заказ готов 🎉",
+  });
 
-message:
-"Нажмите «Написать продавцу», чтобы перейти к оформлению заказа.",
 
-buttons: [
+  text +=
+    `%0A💰 Итого: ${total.toLocaleString("ru-RU")} ₽`;
 
-{
-id: "contact",
-type: "default",
-text: "Написать продавцу"
-},
 
-{
-id: "close",
-type: "cancel",
-text: "Отмена"
+  text +=
+    "%0A%0AЗдравствуйте! Хочу оформить этот заказ.";
+
+
+  tg.showPopup({
+
+    title:
+      "Заказ готов 🎉",
+
+    message:
+      "Нажмите «Написать продавцу», чтобы перейти к продавцу и подтвердить заказ.",
+
+    buttons: [
+
+      {
+        id:
+          "contact",
+
+        type:
+          "default",
+
+        text:
+          "Написать продавцу"
+      },
+
+      {
+        id:
+          "close",
+
+        type:
+          "cancel",
+
+        text:
+          "Отмена"
+      }
+
+    ]
+
+  },
+
+
+  function(buttonId) {
+
+    if (
+      buttonId === "contact"
+    ) {
+
+      window.location.href =
+        "https://t.me/kar_y0?text=" +
+        text;
+
+    }
+
+  });
+
 }
 
-]
 
-}, function(buttonId) {
-
-if (
-buttonId === "contact"
-) {
-
-window.location.href =
-"https://t.me/kar_y0?text=" +
-encoded;
-
-}
-
-});
-
-}
-
-
-/* СТРАНИЦЫ */
+/* ==========================================
+   СТРАНИЦЫ
+========================================== */
 
 function openPage(
-pageId,
-button
+  pageId,
+  button
 ) {
 
-document
-.querySelectorAll(".page")
-.forEach(page => {
-
-page.classList.remove(
-"active"
-);
-
-});
+  document
+    .querySelectorAll(".page")
+    .forEach(page =>
+      page.classList.remove(
+        "active"
+      )
+    );
 
 
-document
-.getElementById(pageId)
-.classList.add("active");
+  document
+    .getElementById(pageId)
+    .classList.add(
+      "active"
+    );
 
 
-document
-.querySelectorAll(".nav-button")
-.forEach(btn => {
-
-btn.classList.remove(
-"active"
-);
-
-});
+  document
+    .querySelectorAll(".nav-button")
+    .forEach(btn =>
+      btn.classList.remove(
+        "active"
+      )
+    );
 
 
-button.classList.add(
-"active"
-);
+  button.classList.add(
+    "active"
+  );
 
 }
 
+
+/* ==========================================
+   ОТКРЫТЬ КОРЗИНУ
+========================================== */
 
 function openCart() {
 
-const buttons =
-document.querySelectorAll(
-".nav-button"
-);
+  const buttons =
+    document.querySelectorAll(
+      ".nav-button"
+    );
 
-openPage(
-"cartPage",
-buttons[1]
-);
 
-renderCart();
+  openPage(
+    "cartPage",
+    buttons[1]
+  );
+
+
+  renderCart();
 
 }
 
 
-/* ПОИСК */
+/* ==========================================
+   ПОИСК
+========================================== */
 
 function searchProducts() {
 
-const value =
-document
-.getElementById(
-"searchInput"
-)
-.value
-.toLowerCase()
-.trim();
+  const value =
+    document
+      .getElementById(
+        "searchInput"
+      )
+      .value
+      .toLowerCase()
+      .trim();
 
 
-const filtered =
-products.filter(product =>
-
-product.name
-.toLowerCase()
-.includes(value)
-
-);
-
-
-renderProducts(filtered);
-
-}
+  const filtered =
+    products.filter(
+      product =>
+        product.name
+          .toLowerCase()
+          .includes(value)
+    );
 
 
-/* КАТЕГОРИЯ */
-
-function filterCategory(category) {
-
-const filtered =
-products.filter(product =>
-
-product.category ===
-category
-
-);
-
-
-renderProducts(filtered);
-
-
-document
-.getElementById(
-"products"
-)
-.scrollIntoView({
-behavior: "smooth"
-});
+  renderProducts(
+    filtered
+  );
 
 }
 
 
-/* ========================= */
-/* АДМИНКА */
-/* ========================= */
+/* ==========================================
+   ФИЛЬТР КАТЕГОРИИ
+========================================== */
+
+function filterCategory(
+  category
+) {
+
+  const filtered =
+    products.filter(
+      product =>
+        product.category ===
+        category
+    );
 
 
-/* ДОБАВЛЕНИЕ */
-
-async function addProduct() {
-
-if (currentUserId !== ADMIN_ID) {
-
-alert("⛔ Доступ запрещён");
-
-return;
-
-}
+  renderProducts(
+    filtered
+  );
 
 
-const name =
-document.getElementById(
-"adminName"
-).value.trim();
-
-
-const price =
-Number(
-document.getElementById(
-"adminPrice"
-).value
-);
-
-
-const category =
-document.getElementById(
-"adminCategory"
-).value;
-
-
-const icon =
-document.getElementById(
-"adminIcon"
-).value.trim()
-|| "📦";
-
-
-if (!name) {
-
-alert("Введите название товара");
-
-return;
+  document
+    .getElementById(
+      "products"
+    )
+    .scrollIntoView({
+      behavior: "smooth"
+    });
 
 }
 
 
-if (!price || price <= 0) {
+/* ==========================================
+   TELEGRAM ПРОФИЛЬ
+========================================== */
 
-alert("Введите правильную цену");
+if (
+  tg.initDataUnsafe &&
+  tg.initDataUnsafe.user
+) {
 
-return;
-
-}
-
-
-const {
-data,
-error
-} =
-await supabaseClient
-.from("products")
-.insert([{
-
-name: name,
-
-price: price,
-
-category: category,
-
-icon: icon
-
-}])
-.select();
+  const user =
+    tg.initDataUnsafe.user;
 
 
-if (error) {
-
-console.error(error);
-
-alert(
-"❌ Ошибка: " +
-error.message
-);
-
-return;
+  document
+    .getElementById(
+      "profileName"
+    )
+    .textContent =
+      user.first_name ||
+      "Покупатель";
 
 }
 
 
-alert("✅ Товар добавлен");
-
-
-document.getElementById(
-"adminName"
-).value = "";
-
-
-document.getElementById(
-"adminPrice"
-).value = "";
-
-
-document.getElementById(
-"adminIcon"
-).value = "";
-
-
-await loadProducts();
-
-renderAdminProducts();
-
-}
-
-
-/* ТОВАРЫ В АДМИНКЕ */
-
-function renderAdminProducts() {
-
-const container =
-document.getElementById(
-"adminProducts"
-);
-
-if (!container) return;
-
-
-container.innerHTML = "";
-
-
-if (products.length === 0) {
-
-container.innerHTML =
-"<div class='empty'>Товаров нет</div>";
-
-return;
-
-}
-
-
-products.forEach(product => {
-
-container.innerHTML += `
-
-<div class="admin-product">
-
-<div class="admin-product-icon">
-${product.icon}
-</div>
-
-<div class="admin-product-info">
-
-<div class="admin-product-name">
-${product.name}
-</div>
-
-<div class="admin-product-price">
-${product.price.toLocaleString("ru-RU")} ₽
-</div>
-
-</div>
-
-<button
-class="delete-button"
-style="width:auto;margin:0;padding:9px 12px"
-onclick="deleteProduct(${product.id})"
->
-🗑
-</button>
-
-</div>
-
-`;
-
-});
-
-}
-
-
-/* УДАЛЕНИЕ */
-
-async function deleteProduct(id) {
-
-if (currentUserId !== ADMIN_ID) {
-
-alert("⛔ Доступ запрещён");
-
-return;
-
-}
-
-
-const product =
-products.find(
-p => p.id === id
-);
-
-
-if (!product) return;
-
-
-const confirmDelete =
-confirm(
-`Удалить товар "${product.name}"?`
-);
-
-
-if (!confirmDelete)
-return;
-
-
-const {
-error
-} =
-await supabaseClient
-.from("products")
-.delete()
-.eq("id", id);
-
-
-if (error) {
-
-console.error(error);
-
-alert(
-"❌ Ошибка удаления: " +
-error.message
-);
-
-return;
-
-}
-
-
-alert("🗑 Товар удалён");
-
-
-await loadProducts();
-
-renderAdminProducts();
-
-}
-
-
-/* ЗАПУСК */
-
-checkAdmin();
+/* ==========================================
+   ЗАПУСК
+========================================== */
 
 loadProducts();
+
+updateCartCount();
 
 </script>
 
