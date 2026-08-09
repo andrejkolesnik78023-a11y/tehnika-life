@@ -1,616 +1,684 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <title>Техника Лайф</title>
-
-  <!-- Telegram WebApp -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0b0d10;
-      color: #fff;
-      min-height: 100vh;
-      padding-bottom: 85px;
-    }
-
-    button {
-      font-family: inherit;
-      border: none;
-      cursor: pointer;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: auto;
-      padding: 18px 16px;
-    }
-
-    /* HEADER */
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .logo {
-      font-size: 24px;
-      font-weight: 800;
-    }
-
-    .logo span {
-      color: #4da3ff;
-    }
-
-    .cart-top {
-      position: relative;
-      width: 45px;
-      height: 45px;
-      border-radius: 14px;
-      background: #171a20;
-      color: white;
-      font-size: 21px;
-    }
-
-    .cart-count {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: #4da3ff;
-      color: white;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      font-size: 12px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-    }
-
-    /* BANNER */
-
-    .banner {
-      background: linear-gradient(135deg, #1769aa, #4da3ff);
-      border-radius: 24px;
-      padding: 25px 20px;
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-
-    .banner-small {
-      font-size: 13px;
-      opacity: .85;
-      margin-bottom: 8px;
-    }
-
-    .banner h1 {
-      font-size: 28px;
-      line-height: 1.1;
-      margin-bottom: 8px;
-    }
-
-    .banner p {
-      font-size: 14px;
-      opacity: .9;
-    }
-
-    /* SEARCH */
-
-    .search {
-      width: 100%;
-      background: #171a20;
-      border: 1px solid #252a33;
-      border-radius: 16px;
-      padding: 15px;
-      color: white;
-      font-size: 15px;
-      outline: none;
-      margin-bottom: 22px;
-    }
-
-    .search::placeholder {
-      color: #777d87;
-    }
-
-    /* TITLE */
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 22px 0 13px;
-    }
-
-    .section-title h2 {
-      font-size: 20px;
-    }
-
-    /* CATEGORIES */
-
-    .categories {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .category {
-      background: #171a20;
-      border: 1px solid #242932;
-      border-radius: 18px;
-      padding: 16px 7px;
-      color: white;
-      text-align: center;
-      transition: .2s;
-    }
-
-    .category:active {
-      transform: scale(.96);
-    }
-
-    .category-icon {
-      font-size: 27px;
-      margin-bottom: 7px;
-    }
-
-    .category-name {
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    /* PRODUCTS */
-
-    .products {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .product {
-      background: #171a20;
-      border: 1px solid #242932;
-      border-radius: 20px;
-      overflow: hidden;
-    }
-
-    .product-image {
-      height: 150px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #20242c, #111318);
-      font-size: 65px;
-    }
-
-    .product-info {
-      padding: 12px;
-    }
-
-    .product-name {
-      font-size: 14px;
-      font-weight: 600;
-      min-height: 38px;
-      line-height: 1.3;
-    }
-
-    .product-price {
-      font-size: 18px;
-      font-weight: 800;
-      margin: 9px 0;
-    }
-
-    .product-button {
-      width: 100%;
-      background: #2b8eea;
-      color: white;
-      padding: 11px;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 13px;
-    }
-
-    .product-button:active {
-      transform: scale(.97);
-    }
-
-    /* BOTTOM NAV */
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 72px;
-      background: rgba(15,17,21,.96);
-      border-top: 1px solid #252932;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 100;
-      backdrop-filter: blur(12px);
-    }
-
-    .nav-button {
-      background: transparent;
-      color: #777d87;
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .nav-button.active {
-      color: #4da3ff;
-    }
-
-    .nav-icon {
-      font-size: 22px;
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    /* PAGES */
-
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    /* CART */
-
-    .cart-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: #171a20;
-      padding: 12px;
-      border-radius: 16px;
-      margin-bottom: 10px;
-    }
-
-    .cart-item-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 13px;
-      background: #22262e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 30px;
-    }
-
-    .cart-item-info {
-      flex: 1;
-    }
-
-    .cart-item-name {
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .cart-item-price {
-      font-size: 15px;
-      font-weight: 800;
-      margin-top: 5px;
-    }
-
-    .quantity {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 7px;
-    }
-
-    .quantity button {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      background: #292e37;
-      color: white;
-    }
-
-    .total-box {
-      background: #171a20;
-      border-radius: 20px;
-      padding: 18px;
-      margin-top: 20px;
-    }
-
-    .total-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 14px;
-      color: #aeb4bd;
-    }
-
-    .total-row:last-child {
-      margin-bottom: 0;
-      color: white;
-      font-size: 21px;
-      font-weight: 800;
-    }
-
-    .order-button {
-      width: 100%;
-      background: #2b8eea;
-      color: white;
-      padding: 16px;
-      border-radius: 15px;
-      margin-top: 15px;
-      font-size: 16px;
-      font-weight: 800;
-    }
-
-    .empty {
-      text-align: center;
-      padding: 70px 20px;
-      color: #858b95;
-    }
-
-    .empty-icon {
-      font-size: 55px;
-      margin-bottom: 15px;
-    }
-
-    /* PROFILE */
-
-    .profile-card {
-      background: #171a20;
-      border-radius: 22px;
-      padding: 22px;
-      text-align: center;
-    }
-
-    .profile-icon {
-      font-size: 55px;
-      margin-bottom: 10px;
-    }
-
-    .profile-name {
-      font-size: 20px;
-      font-weight: 800;
-    }
-
-    .profile-text {
-      color: #858b95;
-      font-size: 14px;
-      margin-top: 7px;
-    }
-
-    .contact-button {
-      display: block;
-      width: 100%;
-      background: #2b8eea;
-      color: white;
-      padding: 15px;
-      border-radius: 15px;
-      margin-top: 20px;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    /* LOADING */
-
-    .loading {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 50px 20px;
-      color: #858b95;
-    }
-
-    @media (min-width: 550px) {
-      .products {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Техника Лайф</title>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0b0d10;
+  color: white;
+  min-height: 100vh;
+  padding-bottom: 90px;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 18px 16px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.logo span {
+  color: #4da3ff;
+}
+
+.cart-top {
+  position: relative;
+  width: 45px;
+  height: 45px;
+  border-radius: 14px;
+  background: #171a20;
+  color: white;
+  font-size: 21px;
+}
+
+.cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #4da3ff;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 12px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+/* BANNER */
+
+.banner {
+  background: linear-gradient(135deg, #1769aa, #4da3ff);
+  border-radius: 24px;
+  padding: 25px 20px;
+  margin-bottom: 20px;
+}
+
+.banner-small {
+  font-size: 13px;
+  opacity: .85;
+  margin-bottom: 8px;
+}
+
+.banner h1 {
+  font-size: 28px;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.banner p {
+  font-size: 14px;
+  opacity: .9;
+}
+
+/* SEARCH */
+
+.search {
+  width: 100%;
+  background: #171a20;
+  border: 1px solid #252a33;
+  border-radius: 16px;
+  padding: 15px;
+  color: white;
+  font-size: 15px;
+  outline: none;
+  margin-bottom: 20px;
+}
+
+.search::placeholder {
+  color: #777d87;
+}
+
+/* CATEGORIES */
+
+.section-title {
+  margin: 22px 0 13px;
+}
+
+.section-title h2 {
+  font-size: 20px;
+}
+
+.categories {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.category {
+  background: #171a20;
+  border: 1px solid #242932;
+  border-radius: 18px;
+  padding: 16px 7px;
+  color: white;
+  text-align: center;
+}
+
+.category-icon {
+  font-size: 27px;
+  margin-bottom: 7px;
+}
+
+.category-name {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* PRODUCTS */
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.product {
+  background: #171a20;
+  border: 1px solid #242932;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.product-image {
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #20242c, #111318);
+  font-size: 65px;
+}
+
+.product-info {
+  padding: 12px;
+}
+
+.product-name {
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 38px;
+}
+
+.product-price {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 9px 0;
+}
+
+.product-button,
+.order-button,
+.admin-button {
+  width: 100%;
+  background: #2b8eea;
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.delete-button {
+  width: 100%;
+  background: #d83a4a;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 7px;
+  font-weight: 700;
+}
+
+/* NAV */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: rgba(15,17,21,.97);
+  border-top: 1px solid #252932;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+
+.nav-button {
+  background: transparent;
+  color: #777d87;
+  font-size: 12px;
+  text-align: center;
+}
+
+.nav-button.active {
+  color: #4da3ff;
+}
+
+.nav-icon {
+  font-size: 22px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* CART */
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #171a20;
+  padding: 12px;
+  border-radius: 16px;
+  margin-bottom: 10px;
+}
+
+.cart-item-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 13px;
+  background: #22262e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+}
+
+.cart-item-info {
+  flex: 1;
+}
+
+.cart-item-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cart-item-price {
+  font-size: 15px;
+  font-weight: 800;
+  margin-top: 5px;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 7px;
+}
+
+.quantity button {
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+  background: #292e37;
+  color: white;
+}
+
+.total-box {
+  background: #171a20;
+  border-radius: 20px;
+  padding: 18px;
+  margin-top: 20px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  color: #aeb4bd;
+}
+
+.total-row:last-child {
+  margin-bottom: 0;
+  color: white;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.order-button {
+  margin-top: 15px;
+  padding: 16px;
+  font-size: 16px;
+}
+
+.empty {
+  text-align: center;
+  padding: 70px 20px;
+  color: #858b95;
+}
+
+.empty-icon {
+  font-size: 55px;
+  margin-bottom: 15px;
+}
+
+/* PROFILE */
+
+.profile-card {
+  background: #171a20;
+  border-radius: 22px;
+  padding: 22px;
+  text-align: center;
+}
+
+.profile-icon {
+  font-size: 55px;
+  margin-bottom: 10px;
+}
+
+.profile-name {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.profile-text {
+  color: #858b95;
+  font-size: 14px;
+  margin-top: 7px;
+}
+
+.contact-button {
+  display: block;
+  width: 100%;
+  background: #2b8eea;
+  color: white;
+  padding: 15px;
+  border-radius: 15px;
+  margin-top: 20px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ADMIN */
+
+.admin-card {
+  background: #171a20;
+  border: 1px solid #252a33;
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.admin-card h3 {
+  margin-bottom: 15px;
+}
+
+.admin-input {
+  width: 100%;
+  background: #0f1115;
+  border: 1px solid #292e37;
+  color: white;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  outline: none;
+  font-size: 15px;
+}
+
+.admin-select {
+  width: 100%;
+  background: #0f1115;
+  border: 1px solid #292e37;
+  color: white;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.admin-product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #0f1115;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.admin-product-icon {
+  font-size: 35px;
+}
+
+.admin-product-info {
+  flex: 1;
+}
+
+.admin-product-name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.admin-product-price {
+  color: #4da3ff;
+  margin-top: 4px;
+  font-weight: 700;
+}
+
+.admin-title {
+  font-size: 25px;
+  font-weight: 800;
+  margin-bottom: 18px;
+}
+
+.admin-warning {
+  background: #2b2020;
+  border: 1px solid #653333;
+  padding: 14px;
+  border-radius: 14px;
+  color: #ffb0b0;
+  margin-bottom: 15px;
+}
+
+@media (min-width: 550px) {
+  .products {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <!-- ГЛАВНАЯ -->
+<!-- ГЛАВНАЯ -->
 
-  <div id="homePage" class="page active">
+<div id="homePage" class="page active">
 
-    <div class="header">
+<div class="header">
+<div class="logo">⚡ Техника <span>Лайф</span></div>
 
-      <div class="logo">
-        ⚡ Техника <span>Лайф</span>
-      </div>
+<button class="cart-top" onclick="openCart()">
+🛒
+<span id="cartCount" class="cart-count">0</span>
+</button>
+</div>
 
-      <button class="cart-top" onclick="openCart()">
-        🛒
-        <span id="cartCount" class="cart-count">0</span>
-      </button>
+<div class="banner">
+<div class="banner-small">ОНЛАЙН-МАГАЗИН ТЕХНИКИ</div>
 
-    </div>
+<h1>
+Техника для жизни<br>
+по хорошим ценам
+</h1>
 
+<p>
+Смартфоны, планшеты, гаджеты и аксессуары
+</p>
+</div>
 
-    <div class="banner">
+<input
+id="searchInput"
+class="search"
+type="text"
+placeholder="🔎 Поиск товара..."
+oninput="searchProducts()"
+>
 
-      <div class="banner-small">
-        ОНЛАЙН-МАГАЗИН ТЕХНИКИ
-      </div>
+<div class="section-title">
+<h2>📂 Категории</h2>
+</div>
 
-      <h1>
-        Техника для жизни<br>
-        по хорошим ценам
-      </h1>
+<div class="categories">
 
-      <p>
-        Смартфоны, планшеты, гаджеты и аксессуары
-      </p>
+<button class="category" onclick="filterCategory('Смартфоны')">
+<div class="category-icon">📱</div>
+<div class="category-name">Смартфоны</div>
+</button>
 
-    </div>
+<button class="category" onclick="filterCategory('Планшеты')">
+<div class="category-icon">📲</div>
+<div class="category-name">Планшеты</div>
+</button>
 
+<button class="category" onclick="filterCategory('Ноутбуки')">
+<div class="category-icon">💻</div>
+<div class="category-name">Ноутбуки</div>
+</button>
 
-    <input
-      id="searchInput"
-      class="search"
-      type="text"
-      placeholder="🔎 Поиск товара..."
-      oninput="searchProducts()"
-    >
+<button class="category" onclick="filterCategory('Наушники')">
+<div class="category-icon">🎧</div>
+<div class="category-name">Наушники</div>
+</button>
 
+<button class="category" onclick="filterCategory('Часы')">
+<div class="category-icon">⌚</div>
+<div class="category-name">Смарт-часы</div>
+</button>
 
-    <div class="section-title">
-      <h2>📂 Категории</h2>
-    </div>
+<button class="category" onclick="filterCategory('Аксессуары')">
+<div class="category-icon">🔌</div>
+<div class="category-name">Аксессуары</div>
+</button>
 
+</div>
 
-    <div class="categories">
+<div class="section-title">
+<h2>🔥 Популярное</h2>
+</div>
 
-      <button
-        class="category"
-        onclick="filterCategory('Смартфоны')"
-      >
-        <div class="category-icon">📱</div>
-        <div class="category-name">Смартфоны</div>
-      </button>
+<div id="products" class="products"></div>
 
-
-      <button
-        class="category"
-        onclick="filterCategory('Планшеты')"
-      >
-        <div class="category-icon">📲</div>
-        <div class="category-name">Планшеты</div>
-      </button>
-
-
-      <button
-        class="category"
-        onclick="filterCategory('Ноутбуки')"
-      >
-        <div class="category-icon">💻</div>
-        <div class="category-name">Ноутбуки</div>
-      </button>
-
-
-      <button
-        class="category"
-        onclick="filterCategory('Наушники')"
-      >
-        <div class="category-icon">🎧</div>
-        <div class="category-name">Наушники</div>
-      </button>
+</div>
 
 
-      <button
-        class="category"
-        onclick="filterCategory('Часы')"
-      >
-        <div class="category-icon">⌚</div>
-        <div class="category-name">Смарт-часы</div>
-      </button>
+<!-- КОРЗИНА -->
+
+<div id="cartPage" class="page">
+
+<div class="header">
+<div class="logo">🛒 Корзина</div>
+</div>
+
+<div id="cartItems"></div>
+
+<div id="cartTotal"></div>
+
+</div>
 
 
-      <button
-        class="category"
-        onclick="filterCategory('Аксессуары')"
-      >
-        <div class="category-icon">🔌</div>
-        <div class="category-name">Аксессуары</div>
-      </button>
+<!-- ПРОФИЛЬ -->
 
-    </div>
+<div id="profilePage" class="page">
 
+<div class="header">
+<div class="logo">👤 Профиль</div>
+</div>
 
-    <div class="section-title">
-      <h2>🔥 Популярное</h2>
-    </div>
+<div class="profile-card">
 
+<div class="profile-icon">👤</div>
 
-    <div id="products" class="products">
+<div id="profileName" class="profile-name">
+Покупатель
+</div>
 
-      <div class="loading">
-        ⏳ Загружаем товары...
-      </div>
+<div class="profile-text">
+Добро пожаловать в Техника Лайф ⚡
+</div>
 
-    </div>
+<a
+href="https://t.me/kar_y0"
+class="contact-button"
+>
+💬 Связаться с продавцом
+</a>
 
-  </div>
+</div>
 
-
-  <!-- КОРЗИНА -->
-
-  <div id="cartPage" class="page">
-
-    <div class="header">
-
-      <div class="logo">
-        🛒 Корзина
-      </div>
-
-    </div>
-
-    <div id="cartItems"></div>
-
-    <div id="cartTotal"></div>
-
-  </div>
+</div>
 
 
-  <!-- ПРОФИЛЬ -->
+<!-- АДМИНКА -->
 
-  <div id="profilePage" class="page">
+<div id="adminPage" class="page">
 
-    <div class="header">
+<div class="admin-title">
+⚙️ Админ-панель
+</div>
 
-      <div class="logo">
-        👤 Профиль
-      </div>
+<div class="admin-warning">
+🔐 Доступ разрешён только владельцу магазина.
+</div>
 
-    </div>
+<div class="admin-card">
+
+<h3>➕ Добавить товар</h3>
+
+<input
+id="adminName"
+class="admin-input"
+placeholder="Название товара"
+>
+
+<input
+id="adminPrice"
+class="admin-input"
+type="number"
+placeholder="Цена в рублях"
+>
+
+<select id="adminCategory" class="admin-select">
+
+<option value="Смартфоны">📱 Смартфоны</option>
+
+<option value="Планшеты">📲 Планшеты</option>
+
+<option value="Ноутбуки">💻 Ноутбуки</option>
+
+<option value="Наушники">🎧 Наушники</option>
+
+<option value="Часы">⌚ Смарт-часы</option>
+
+<option value="Аксессуары">🔌 Аксессуары</option>
+
+</select>
+
+<input
+id="adminIcon"
+class="admin-input"
+placeholder="Эмодзи товара 📱"
+>
+
+<button
+class="admin-button"
+onclick="addProduct()"
+>
+➕ Добавить товар
+</button>
+
+</div>
 
 
-    <div class="profile-card">
+<div class="admin-card">
 
-      <div class="profile-icon">
-        👤
-      </div>
+<h3>📦 Товары</h3>
 
-      <div
-        id="profileName"
-        class="profile-name"
-      >
-        Покупатель
-      </div>
+<div id="adminProducts"></div>
 
-      <div class="profile-text">
-        Добро пожаловать в Техника Лайф ⚡
-      </div>
+</div>
 
-
-      <a
-        href="https://t.me/kar_y0"
-        class="contact-button"
-      >
-        💬 Связаться с продавцом
-      </a>
-
-    </div>
-
-  </div>
+</div>
 
 </div>
 
@@ -619,844 +687,951 @@
 
 <div class="bottom-nav">
 
-  <button
-    class="nav-button active"
-    onclick="openPage('homePage', this)"
-  >
-    <span class="nav-icon">🏠</span>
-    Главная
-  </button>
+<button
+class="nav-button active"
+onclick="openPage('homePage', this)"
+>
+<span class="nav-icon">🏠</span>
+Главная
+</button>
 
+<button
+class="nav-button"
+onclick="openPage('cartPage', this); renderCart()"
+>
+<span class="nav-icon">🛒</span>
+Корзина
+</button>
 
-  <button
-    class="nav-button"
-    onclick="openPage('cartPage', this); renderCart()"
-  >
-    <span class="nav-icon">🛒</span>
-    Корзина
-  </button>
+<button
+class="nav-button"
+onclick="openPage('profilePage', this)"
+>
+<span class="nav-icon">👤</span>
+Профиль
+</button>
 
-
-  <button
-    class="nav-button"
-    onclick="openPage('profilePage', this)"
-  >
-    <span class="nav-icon">👤</span>
-    Профиль
-  </button>
+<button
+id="adminNav"
+class="nav-button"
+style="display:none"
+onclick="openPage('adminPage', this); renderAdminProducts()"
+>
+<span class="nav-icon">⚙️</span>
+Админка
+</button>
 
 </div>
 
 
 <script>
 
-  /* ========================================
-     TELEGRAM
-  ======================================== */
-
-  const tg = window.Telegram.WebApp;
-
-  tg.ready();
-  tg.expand();
-
-
-  /* ========================================
-     SUPABASE
-  ======================================== */
-
-  const SUPABASE_URL =
-    "https://krdhfzbinbxyketfcrdg.supabase.co";
-
-  const SUPABASE_KEY =
-    "sb_publishable_nDSB-nLt5u2FVp0GH8MffQ_kaJEpB0L";
-
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
-
-
-  /* ========================================
-     ТОВАРЫ
-  ======================================== */
-
-  const products = [
-
-    {
-      id: 1,
-      name: "iPhone 15 128GB",
-      price: 54990,
-      category: "Смартфоны",
-      icon: "📱"
-    },
-
-    {
-      id: 2,
-      name: "Samsung Galaxy S24",
-      price: 49990,
-      category: "Смартфоны",
-      icon: "📱"
-    },
+/* TELEGRAM */
 
-    {
-      id: 3,
-      name: "iPad 10 64GB",
-      price: 39990,
-      category: "Планшеты",
-      icon: "📲"
-    },
+const tg = window.Telegram.WebApp;
 
-    {
-      id: 4,
-      name: "MacBook Air",
-      price: 89990,
-      category: "Ноутбуки",
-      icon: "💻"
-    },
+tg.ready();
+tg.expand();
 
-    {
-      id: 5,
-      name: "AirPods Pro 2",
-      price: 17990,
-      category: "Наушники",
-      icon: "🎧"
-    },
 
-    {
-      id: 6,
-      name: "Apple Watch",
-      price: 24990,
-      category: "Часы",
-      icon: "⌚"
-    },
+/* SUPABASE */
 
-    {
-      id: 7,
-      name: "Зарядка USB-C",
-      price: 1490,
-      category: "Аксессуары",
-      icon: "🔌"
-    },
+const SUPABASE_URL =
+"https://krdhfzbinbxyketfcrdg.supabase.co";
 
-    {
-      id: 8,
-      name: "Power Bank 20000 mAh",
-      price: 2990,
-      category: "Аксессуары",
-      icon: "🔋"
-    }
+const SUPABASE_KEY =
+"sb_publishable_nDSB-nLt5u2FVp0GH8MffQ_kaJEpB0L";
 
-  ];
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
 
-  let cart = [];
+/* АДМИН */
 
+const ADMIN_ID = "756164773";
 
-  /* ========================================
-     ЗАГРУЗКА ТОВАРОВ ИЗ SUPABASE
-  ======================================== */
+let currentUserId = "";
 
-  async function loadProducts() {
+if (
+tg.initDataUnsafe &&
+tg.initDataUnsafe.user
+) {
 
-    console.log("Проверяем Supabase...");
+currentUserId =
+String(tg.initDataUnsafe.user.id);
 
-    const { data, error } =
-      await supabaseClient
-        .from("products")
-        .select("*")
-        .order("id", {
-          ascending: true
-        });
+document.getElementById("profileName").textContent =
+tg.initDataUnsafe.user.first_name ||
+"Покупатель";
 
+}
 
-    if (error) {
 
-      console.error(
-        "Ошибка Supabase:",
-        error
-      );
+/* ПРОВЕРКА АДМИНА */
 
-      console.log(
-        "Используем тестовые товары."
-      );
+function checkAdmin() {
 
-      renderProducts();
+if (currentUserId === ADMIN_ID) {
 
-      return;
-    }
+document.getElementById("adminNav").style.display =
+"block";
 
+console.log("Админ подтверждён");
 
-    console.log(
-      "Товары из Supabase:",
-      data
-    );
+} else {
 
+console.log("Обычный пользователь");
 
-    if (data && data.length > 0) {
+}
 
-      products.length = 0;
+}
 
 
-      data.forEach(product => {
+/* ТОВАРЫ */
 
-        products.push({
+const products = [];
 
-          id: product.id,
+let cart = [];
 
-          name: product.name,
 
-          price: Number(product.price),
+/* ЗАГРУЗКА ТОВАРОВ */
 
-          category: product.category,
+async function loadProducts() {
 
-          icon: product.icon || "📦"
+const {
+data,
+error
+} = await supabaseClient
+.from("products")
+.select("*")
+.order("id", {
+ascending: true
+});
 
-        });
 
-      });
+if (error) {
 
-    }
+console.error(
+"Ошибка загрузки товаров:",
+error
+);
 
+return;
 
-    renderProducts();
+}
 
-  }
 
+products.length = 0;
 
-  /* ========================================
-     ПОКАЗ ТОВАРОВ
-  ======================================== */
 
-  function renderProducts(
-    list = products
-  ) {
+data.forEach(product => {
 
-    const container =
-      document.getElementById(
-        "products"
-      );
+products.push({
 
+id: product.id,
 
-    container.innerHTML = "";
+name: product.name,
 
+price: Number(product.price),
 
-    if (
-      !list ||
-      list.length === 0
-    ) {
+category: product.category,
 
-      container.innerHTML = `
+icon: product.icon || "📦"
 
-        <div class="empty">
+});
 
-          <div class="empty-icon">
-            🔎
-          </div>
+});
 
-          Товар не найден
 
-        </div>
+renderProducts();
 
-      `;
+updateCartCount();
 
-      return;
+if (currentUserId === ADMIN_ID) {
 
-    }
+renderAdminProducts();
 
+}
 
-    list.forEach(product => {
+}
 
-      container.innerHTML += `
 
-        <div class="product">
+/* ПОКАЗ ТОВАРОВ */
 
-          <div class="product-image">
-            ${product.icon || "📦"}
-          </div>
+function renderProducts(list = products) {
 
+const container =
+document.getElementById("products");
 
-          <div class="product-info">
+container.innerHTML = "";
 
-            <div class="product-name">
-              ${product.name}
-            </div>
+if (list.length === 0) {
 
+container.innerHTML = `
+<div class="empty">
 
-            <div class="product-price">
-              ${Number(product.price).toLocaleString("ru-RU")} ₽
-            </div>
+<div class="empty-icon">
+📦
+</div>
 
+Товаров пока нет
 
-            <button
-              class="product-button"
-              onclick="addToCart(${product.id})"
-            >
-              🛒 В корзину
-            </button>
+</div>
+`;
 
-          </div>
+return;
 
-        </div>
+}
 
-      `;
 
-    });
+list.forEach(product => {
 
-  }
+container.innerHTML += `
 
+<div class="product">
 
-  /* ========================================
-     КОРЗИНА
-  ======================================== */
+<div class="product-image">
+${product.icon}
+</div>
 
-  function addToCart(id) {
+<div class="product-info">
 
-    const product =
-      products.find(
-        p => p.id === id
-      );
+<div class="product-name">
+${product.name}
+</div>
 
+<div class="product-price">
+${product.price.toLocaleString("ru-RU")} ₽
+</div>
 
-    if (!product) {
-      return;
-    }
+<button
+class="product-button"
+onclick="addToCart(${product.id})"
+>
+🛒 В корзину
+</button>
 
+</div>
 
-    const existing =
-      cart.find(
-        p => p.id === id
-      );
+</div>
 
+`;
 
-    if (existing) {
+});
 
-      existing.quantity++;
+}
 
-    } else {
 
-      cart.push({
+/* КОРЗИНА */
 
-        ...product,
+function addToCart(id) {
 
-        quantity: 1
+const product =
+products.find(
+p => p.id === id
+);
 
-      });
+if (!product) return;
 
-    }
 
+const existing =
+cart.find(
+p => p.id === id
+);
 
-    updateCartCount();
 
+if (existing) {
 
-    if (
-      tg.HapticFeedback &&
-      tg.HapticFeedback.impactOccurred
-    ) {
+existing.quantity++;
 
-      tg.HapticFeedback
-        .impactOccurred("light");
+} else {
 
-    }
+cart.push({
 
-  }
+...product,
 
+quantity: 1
 
-  /* ========================================
-     СЧЁТЧИК КОРЗИНЫ
-  ======================================== */
+});
 
-  function updateCartCount() {
+}
 
-    const count =
-      cart.reduce(
-        (sum, item) =>
-          sum + item.quantity,
-        0
-      );
 
+updateCartCount();
 
-    const badge =
-      document.getElementById(
-        "cartCount"
-      );
+if (
+tg.HapticFeedback
+) {
 
+tg.HapticFeedback
+.impactOccurred("light");
 
-    badge.textContent = count;
+}
 
+}
 
-    badge.style.display =
-      count > 0
-        ? "flex"
-        : "none";
 
-  }
+/* СЧЁТЧИК */
 
+function updateCartCount() {
 
-  /* ========================================
-     ОТОБРАЖЕНИЕ КОРЗИНЫ
-  ======================================== */
+const count =
+cart.reduce(
+(sum, item) =>
+sum + item.quantity,
+0
+);
 
-  function renderCart() {
 
-    const container =
-      document.getElementById(
-        "cartItems"
-      );
+const badge =
+document.getElementById(
+"cartCount"
+);
 
 
-    const total =
-      document.getElementById(
-        "cartTotal"
-      );
+badge.textContent = count;
 
 
-    container.innerHTML = "";
+badge.style.display =
+count > 0
+? "flex"
+: "none";
 
+}
 
-    if (
-      cart.length === 0
-    ) {
 
-      container.innerHTML = `
+/* ОТРИСОВКА КОРЗИНЫ */
 
-        <div class="empty">
+function renderCart() {
 
-          <div class="empty-icon">
-            🛒
-          </div>
+const container =
+document.getElementById(
+"cartItems"
+);
 
-          Корзина пока пустая
+const total =
+document.getElementById(
+"cartTotal"
+);
 
-          <br><br>
 
-          Добавьте понравившийся товар
+container.innerHTML = "";
 
-        </div>
 
-      `;
+if (cart.length === 0) {
 
+container.innerHTML = `
 
-      total.innerHTML = "";
+<div class="empty">
 
-      return;
+<div class="empty-icon">
+🛒
+</div>
 
-    }
+Корзина пока пустая
 
+<br><br>
 
-    let sum = 0;
+Добавьте понравившийся товар
 
+</div>
 
-    cart.forEach(item => {
+`;
 
-      sum +=
-        Number(item.price) *
-        item.quantity;
+total.innerHTML = "";
 
+return;
 
-      container.innerHTML += `
+}
 
-        <div class="cart-item">
 
-          <div class="cart-item-icon">
-            ${item.icon || "📦"}
-          </div>
+let sum = 0;
 
 
-          <div class="cart-item-info">
+cart.forEach(item => {
 
-            <div class="cart-item-name">
-              ${item.name}
-            </div>
+const itemTotal =
+item.price *
+item.quantity;
 
+sum += itemTotal;
 
-            <div class="cart-item-price">
-              ${(
-                Number(item.price) *
-                item.quantity
-              ).toLocaleString("ru-RU")} ₽
-            </div>
 
+container.innerHTML += `
 
-            <div class="quantity">
+<div class="cart-item">
 
-              <button
-                onclick="changeQuantity(${item.id}, -1)"
-              >
-                −
-              </button>
+<div class="cart-item-icon">
+${item.icon}
+</div>
 
+<div class="cart-item-info">
 
-              <span>
-                ${item.quantity}
-              </span>
+<div class="cart-item-name">
+${item.name}
+</div>
 
+<div class="cart-item-price">
+${itemTotal.toLocaleString("ru-RU")} ₽
+</div>
 
-              <button
-                onclick="changeQuantity(${item.id}, 1)"
-              >
-                +
-              </button>
+<div class="quantity">
 
-            </div>
+<button
+onclick="changeQuantity(${item.id}, -1)"
+>
+−
+</button>
 
-          </div>
+<span>
+${item.quantity}
+</span>
 
-        </div>
+<button
+onclick="changeQuantity(${item.id}, 1)"
+>
++
+</button>
 
-      `;
+</div>
 
-    });
+</div>
 
+</div>
 
-    total.innerHTML = `
+`;
 
-      <div class="total-box">
+});
 
-        <div class="total-row">
 
-          <span>
-            Товары
-          </span>
+total.innerHTML = `
 
-          <span>
-            ${sum.toLocaleString("ru-RU")} ₽
-          </span>
+<div class="total-box">
 
-        </div>
+<div class="total-row">
 
+<span>
+Товары
+</span>
 
-        <div class="total-row">
+<span>
+${sum.toLocaleString("ru-RU")} ₽
+</span>
 
-          <span>
-            Итого
-          </span>
+</div>
 
-          <span>
-            ${sum.toLocaleString("ru-RU")} ₽
-          </span>
+<div class="total-row">
 
-        </div>
+<span>
+Итого
+</span>
 
+<span>
+${sum.toLocaleString("ru-RU")} ₽
+</span>
 
-        <button
-          class="order-button"
-          onclick="createOrder()"
-        >
-          ✅ Оформить заказ
-        </button>
+</div>
 
-      </div>
+<button
+class="order-button"
+onclick="createOrder()"
+>
+✅ Оформить заказ
+</button>
 
-    `;
+</div>
 
-  }
+`;
 
+}
 
-  /* ========================================
-     ИЗМЕНЕНИЕ КОЛИЧЕСТВА
-  ======================================== */
 
-  function changeQuantity(
-    id,
-    change
-  ) {
+/* КОЛИЧЕСТВО */
 
-    const item =
-      cart.find(
-        p => p.id === id
-      );
+function changeQuantity(id, change) {
 
+const item =
+cart.find(
+p => p.id === id
+);
 
-    if (!item) {
-      return;
-    }
+if (!item) return;
 
 
-    item.quantity += change;
+item.quantity += change;
 
 
-    if (
-      item.quantity <= 0
-    ) {
+if (item.quantity <= 0) {
 
-      cart =
-        cart.filter(
-          p => p.id !== id
-        );
+cart =
+cart.filter(
+p => p.id !== id
+);
 
-    }
+}
 
 
-    updateCartCount();
+updateCartCount();
 
-    renderCart();
+renderCart();
 
-  }
+}
 
 
-  /* ========================================
-     ОФОРМЛЕНИЕ ЗАКАЗА
-  ======================================== */
+/* ЗАКАЗ */
 
-  function createOrder() {
+function createOrder() {
 
-    if (
-      cart.length === 0
-    ) {
+if (cart.length === 0)
+return;
 
-      return;
 
-    }
+let text =
+"🛍 Новый заказ — Техника Лайф\n\n";
 
+let total = 0;
 
-    let text =
-      "🛍 Новый заказ — Техника Лайф\n\n";
 
+cart.forEach(item => {
 
-    let total = 0;
+const itemTotal =
+item.price *
+item.quantity;
 
+total += itemTotal;
 
-    cart.forEach(item => {
 
-      const itemTotal =
-        Number(item.price) *
-        item.quantity;
+text +=
+`📦 ${item.name} × ${item.quantity} — ${itemTotal.toLocaleString("ru-RU")} ₽\n`;
 
+});
 
-      total += itemTotal;
 
+text +=
+`\n💰 Итого: ${total.toLocaleString("ru-RU")} ₽`;
 
-      text +=
-        `📱 ${item.name} × ${item.quantity} — ${itemTotal.toLocaleString("ru-RU")} ₽\n`;
+text +=
+"\n\nЗдравствуйте! Хочу оформить этот заказ.";
 
-    });
 
+const encoded =
+encodeURIComponent(text);
 
-    text +=
-      `\n💰 Итого: ${total.toLocaleString("ru-RU")} ₽`;
 
+tg.showPopup({
 
-    text +=
-      "\n\nЗдравствуйте! Хочу оформить этот заказ.";
+title:
+"Заказ готов 🎉",
 
+message:
+"Нажмите «Написать продавцу», чтобы перейти к оформлению заказа.",
 
-    const encodedText =
-      encodeURIComponent(text);
+buttons: [
 
+{
+id: "contact",
+type: "default",
+text: "Написать продавцу"
+},
 
-    tg.showPopup({
+{
+id: "close",
+type: "cancel",
+text: "Отмена"
+}
 
-      title:
-        "Заказ готов 🎉",
+]
 
-      message:
-        "Нажмите «Написать продавцу», чтобы перейти к оплате и подтверждению заказа.",
+}, function(buttonId) {
 
-      buttons: [
+if (
+buttonId === "contact"
+) {
 
-        {
-          id: "contact",
-          type: "default",
-          text: "Написать продавцу"
-        },
+window.location.href =
+"https://t.me/kar_y0?text=" +
+encoded;
 
-        {
-          id: "close",
-          type: "cancel",
-          text: "Отмена"
-        }
+}
 
-      ]
+});
 
-    }, function(buttonId) {
+}
 
-      if (
-        buttonId === "contact"
-      ) {
 
-        window.location.href =
-          "https://t.me/kar_y0?text=" +
-          encodedText;
+/* СТРАНИЦЫ */
 
-      }
+function openPage(
+pageId,
+button
+) {
 
-    });
+document
+.querySelectorAll(".page")
+.forEach(page => {
 
-  }
+page.classList.remove(
+"active"
+);
 
+});
 
-  /* ========================================
-     СТРАНИЦЫ
-  ======================================== */
 
-  function openPage(
-    pageId,
-    button
-  ) {
+document
+.getElementById(pageId)
+.classList.add("active");
 
-    document
-      .querySelectorAll(".page")
-      .forEach(page => {
 
-        page.classList
-          .remove("active");
+document
+.querySelectorAll(".nav-button")
+.forEach(btn => {
 
-      });
+btn.classList.remove(
+"active"
+);
 
+});
 
-    const page =
-      document.getElementById(
-        pageId
-      );
 
+button.classList.add(
+"active"
+);
 
-    if (page) {
+}
 
-      page.classList
-        .add("active");
 
-    }
+function openCart() {
 
+const buttons =
+document.querySelectorAll(
+".nav-button"
+);
 
-    document
-      .querySelectorAll(".nav-button")
-      .forEach(btn => {
+openPage(
+"cartPage",
+buttons[1]
+);
 
-        btn.classList
-          .remove("active");
+renderCart();
 
-      });
+}
 
 
-    if (button) {
+/* ПОИСК */
 
-      button.classList
-        .add("active");
+function searchProducts() {
 
-    }
+const value =
+document
+.getElementById(
+"searchInput"
+)
+.value
+.toLowerCase()
+.trim();
 
-  }
 
+const filtered =
+products.filter(product =>
 
-  /* ========================================
-     ОТКРЫТЬ КОРЗИНУ
-  ======================================== */
+product.name
+.toLowerCase()
+.includes(value)
 
-  function openCart() {
+);
 
-    const buttons =
-      document.querySelectorAll(
-        ".nav-button"
-      );
 
+renderProducts(filtered);
 
-    openPage(
-      "cartPage",
-      buttons[1]
-    );
+}
 
 
-    renderCart();
+/* КАТЕГОРИЯ */
 
-  }
+function filterCategory(category) {
 
+const filtered =
+products.filter(product =>
 
-  /* ========================================
-     ПОИСК
-  ======================================== */
+product.category ===
+category
 
-  function searchProducts() {
+);
 
-    const value =
-      document
-        .getElementById(
-          "searchInput"
-        )
-        .value
-        .toLowerCase()
-        .trim();
 
+renderProducts(filtered);
 
-    const filtered =
-      products.filter(product =>
 
-        product.name
-          .toLowerCase()
-          .includes(value)
+document
+.getElementById(
+"products"
+)
+.scrollIntoView({
+behavior: "smooth"
+});
 
-      );
+}
 
 
-    renderProducts(
-      filtered
-    );
+/* ========================= */
+/* АДМИНКА */
+/* ========================= */
 
-  }
 
+/* ДОБАВЛЕНИЕ */
 
-  /* ========================================
-     ФИЛЬТР КАТЕГОРИИ
-  ======================================== */
+async function addProduct() {
 
-  function filterCategory(
-    category
-  ) {
+if (currentUserId !== ADMIN_ID) {
 
-    const filtered =
-      products.filter(
-        product =>
-          product.category === category
-      );
+alert("⛔ Доступ запрещён");
 
+return;
 
-    renderProducts(
-      filtered
-    );
+}
 
 
-    document
-      .getElementById(
-        "products"
-      )
-      .scrollIntoView({
-        behavior: "smooth"
-      });
+const name =
+document.getElementById(
+"adminName"
+).value.trim();
 
-  }
 
+const price =
+Number(
+document.getElementById(
+"adminPrice"
+).value
+);
 
-  /* ========================================
-     ПРОФИЛЬ TELEGRAM
-  ======================================== */
 
-  if (
-    tg.initDataUnsafe &&
-    tg.initDataUnsafe.user
-  ) {
+const category =
+document.getElementById(
+"adminCategory"
+).value;
 
-    const user =
-      tg.initDataUnsafe.user;
 
+const icon =
+document.getElementById(
+"adminIcon"
+).value.trim()
+|| "📦";
 
-    document
-      .getElementById(
-        "profileName"
-      )
-      .textContent =
-        user.first_name ||
-        "Покупатель";
 
-  }
+if (!name) {
 
+alert("Введите название товара");
 
-  /* ========================================
-     ЗАПУСК
-  ======================================== */
+return;
 
-  updateCartCount();
+}
 
-  loadProducts();
+
+if (!price || price <= 0) {
+
+alert("Введите правильную цену");
+
+return;
+
+}
+
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("products")
+.insert([{
+
+name: name,
+
+price: price,
+
+category: category,
+
+icon: icon
+
+}])
+.select();
+
+
+if (error) {
+
+console.error(error);
+
+alert(
+"❌ Ошибка: " +
+error.message
+);
+
+return;
+
+}
+
+
+alert("✅ Товар добавлен");
+
+
+document.getElementById(
+"adminName"
+).value = "";
+
+
+document.getElementById(
+"adminPrice"
+).value = "";
+
+
+document.getElementById(
+"adminIcon"
+).value = "";
+
+
+await loadProducts();
+
+renderAdminProducts();
+
+}
+
+
+/* ТОВАРЫ В АДМИНКЕ */
+
+function renderAdminProducts() {
+
+const container =
+document.getElementById(
+"adminProducts"
+);
+
+if (!container) return;
+
+
+container.innerHTML = "";
+
+
+if (products.length === 0) {
+
+container.innerHTML =
+"<div class='empty'>Товаров нет</div>";
+
+return;
+
+}
+
+
+products.forEach(product => {
+
+container.innerHTML += `
+
+<div class="admin-product">
+
+<div class="admin-product-icon">
+${product.icon}
+</div>
+
+<div class="admin-product-info">
+
+<div class="admin-product-name">
+${product.name}
+</div>
+
+<div class="admin-product-price">
+${product.price.toLocaleString("ru-RU")} ₽
+</div>
+
+</div>
+
+<button
+class="delete-button"
+style="width:auto;margin:0;padding:9px 12px"
+onclick="deleteProduct(${product.id})"
+>
+🗑
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+/* УДАЛЕНИЕ */
+
+async function deleteProduct(id) {
+
+if (currentUserId !== ADMIN_ID) {
+
+alert("⛔ Доступ запрещён");
+
+return;
+
+}
+
+
+const product =
+products.find(
+p => p.id === id
+);
+
+
+if (!product) return;
+
+
+const confirmDelete =
+confirm(
+`Удалить товар "${product.name}"?`
+);
+
+
+if (!confirmDelete)
+return;
+
+
+const {
+error
+} =
+await supabaseClient
+.from("products")
+.delete()
+.eq("id", id);
+
+
+if (error) {
+
+console.error(error);
+
+alert(
+"❌ Ошибка удаления: " +
+error.message
+);
+
+return;
+
+}
+
+
+alert("🗑 Товар удалён");
+
+
+await loadProducts();
+
+renderAdminProducts();
+
+}
+
+
+/* ЗАПУСК */
+
+checkAdmin();
+
+loadProducts();
 
 </script>
 
