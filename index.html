@@ -1049,5 +1049,25 @@
 
 </script>
 
-</body>
+</body><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://krdhfzbinbxyketfcrdg.supabase.co";
+const SUPABASE_KEY = "sb_publishable_nDSB-nLt5u2FVp0GH8MffQ_kaJEpB0L";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+async function testSupabase() {
+  const { data, error } = await supabaseClient
+    .from("products")
+    .select("*");
+
+  console.log("Supabase:", data, error);
+}
+
+testSupabase();
+</script>
 </html>
