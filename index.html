@@ -1059,15 +1059,34 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
-
-async function testSupabase() {
+async function loadProducts() {
   const { data, error } = await supabaseClient
     .from("products")
-    .select("*");
+    .select("*")
+    .order("id", { ascending: true });
 
-  console.log("Supabase:", data, error);
+  if (error) {
+    console.error("Ошибка Supabase:", error);
+    return;
+  }
+
+  console.log("Товары из Supabase:", data);
+
+  if (data && data.length > 0) {
+    products.length = 0;
+
+    data.forEach(product => {
+      products.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        category: product.category,
+        icon: product.icon || "📦"
+      });
+    });
+
+    renderProducts();
+  }
 }
 
-testSupabase();
-</script>
-</html>
+loadProducts();
