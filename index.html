@@ -6,7 +6,11 @@
 
   <title>Техника Лайф</title>
 
+  <!-- Telegram WebApp -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * {
@@ -259,7 +263,7 @@
       margin-bottom: 2px;
     }
 
-    /* CART */
+    /* PAGES */
 
     .page {
       display: none;
@@ -268,6 +272,8 @@
     .page.active {
       display: block;
     }
+
+    /* CART */
 
     .cart-item {
       display: flex;
@@ -400,6 +406,15 @@
       text-decoration: none;
     }
 
+    /* LOADING */
+
+    .loading {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 50px 20px;
+      color: #858b95;
+    }
+
     @media (min-width: 550px) {
       .products {
         grid-template-columns: repeat(3, 1fr);
@@ -413,22 +428,40 @@
 <div class="container">
 
   <!-- ГЛАВНАЯ -->
+
   <div id="homePage" class="page active">
 
     <div class="header">
-      <div class="logo">⚡ Техника <span>Лайф</span></div>
+
+      <div class="logo">
+        ⚡ Техника <span>Лайф</span>
+      </div>
 
       <button class="cart-top" onclick="openCart()">
         🛒
         <span id="cartCount" class="cart-count">0</span>
       </button>
+
     </div>
 
+
     <div class="banner">
-      <div class="banner-small">ОНЛАЙН-МАГАЗИН ТЕХНИКИ</div>
-      <h1>Техника для жизни<br>по хорошим ценам</h1>
-      <p>Смартфоны, планшеты, гаджеты и аксессуары</p>
+
+      <div class="banner-small">
+        ОНЛАЙН-МАГАЗИН ТЕХНИКИ
+      </div>
+
+      <h1>
+        Техника для жизни<br>
+        по хорошим ценам
+      </h1>
+
+      <p>
+        Смартфоны, планшеты, гаджеты и аксессуары
+      </p>
+
     </div>
+
 
     <input
       id="searchInput"
@@ -438,58 +471,96 @@
       oninput="searchProducts()"
     >
 
+
     <div class="section-title">
       <h2>📂 Категории</h2>
     </div>
 
+
     <div class="categories">
 
-      <button class="category" onclick="filterCategory('Смартфоны')">
+      <button
+        class="category"
+        onclick="filterCategory('Смартфоны')"
+      >
         <div class="category-icon">📱</div>
         <div class="category-name">Смартфоны</div>
       </button>
 
-      <button class="category" onclick="filterCategory('Планшеты')">
+
+      <button
+        class="category"
+        onclick="filterCategory('Планшеты')"
+      >
         <div class="category-icon">📲</div>
         <div class="category-name">Планшеты</div>
       </button>
 
-      <button class="category" onclick="filterCategory('Ноутбуки')">
+
+      <button
+        class="category"
+        onclick="filterCategory('Ноутбуки')"
+      >
         <div class="category-icon">💻</div>
         <div class="category-name">Ноутбуки</div>
       </button>
 
-      <button class="category" onclick="filterCategory('Наушники')">
+
+      <button
+        class="category"
+        onclick="filterCategory('Наушники')"
+      >
         <div class="category-icon">🎧</div>
         <div class="category-name">Наушники</div>
       </button>
 
-      <button class="category" onclick="filterCategory('Часы')">
+
+      <button
+        class="category"
+        onclick="filterCategory('Часы')"
+      >
         <div class="category-icon">⌚</div>
         <div class="category-name">Смарт-часы</div>
       </button>
 
-      <button class="category" onclick="filterCategory('Аксессуары')">
+
+      <button
+        class="category"
+        onclick="filterCategory('Аксессуары')"
+      >
         <div class="category-icon">🔌</div>
         <div class="category-name">Аксессуары</div>
       </button>
 
     </div>
 
+
     <div class="section-title">
       <h2>🔥 Популярное</h2>
     </div>
 
-    <div id="products" class="products"></div>
+
+    <div id="products" class="products">
+
+      <div class="loading">
+        ⏳ Загружаем товары...
+      </div>
+
+    </div>
 
   </div>
 
 
   <!-- КОРЗИНА -->
+
   <div id="cartPage" class="page">
 
     <div class="header">
-      <div class="logo">🛒 Корзина</div>
+
+      <div class="logo">
+        🛒 Корзина
+      </div>
+
     </div>
 
     <div id="cartItems"></div>
@@ -500,23 +571,35 @@
 
 
   <!-- ПРОФИЛЬ -->
+
   <div id="profilePage" class="page">
 
     <div class="header">
-      <div class="logo">👤 Профиль</div>
+
+      <div class="logo">
+        👤 Профиль
+      </div>
+
     </div>
+
 
     <div class="profile-card">
 
-      <div class="profile-icon">👤</div>
+      <div class="profile-icon">
+        👤
+      </div>
 
-      <div id="profileName" class="profile-name">
+      <div
+        id="profileName"
+        class="profile-name"
+      >
         Покупатель
       </div>
 
       <div class="profile-text">
         Добро пожаловать в Техника Лайф ⚡
       </div>
+
 
       <a
         href="https://t.me/kar_y0"
@@ -536,17 +619,28 @@
 
 <div class="bottom-nav">
 
-  <button class="nav-button active" onclick="openPage('homePage', this)">
+  <button
+    class="nav-button active"
+    onclick="openPage('homePage', this)"
+  >
     <span class="nav-icon">🏠</span>
     Главная
   </button>
 
-  <button class="nav-button" onclick="openPage('cartPage', this); renderCart()">
+
+  <button
+    class="nav-button"
+    onclick="openPage('cartPage', this); renderCart()"
+  >
     <span class="nav-icon">🛒</span>
     Корзина
   </button>
 
-  <button class="nav-button" onclick="openPage('profilePage', this)">
+
+  <button
+    class="nav-button"
+    onclick="openPage('profilePage', this)"
+  >
     <span class="nav-icon">👤</span>
     Профиль
   </button>
@@ -556,7 +650,9 @@
 
 <script>
 
-  /* TELEGRAM */
+  /* ========================================
+     TELEGRAM
+  ======================================== */
 
   const tg = window.Telegram.WebApp;
 
@@ -564,7 +660,26 @@
   tg.expand();
 
 
-  /* ТОВАРЫ */
+  /* ========================================
+     SUPABASE
+  ======================================== */
+
+  const SUPABASE_URL =
+    "https://krdhfzbinbxyketfcrdg.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_nDSB-nLt5u2FVp0GH8MffQ_kaJEpB0L";
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+  /* ========================================
+     ТОВАРЫ
+  ======================================== */
 
   const products = [
 
@@ -638,25 +753,117 @@
   let cart = [];
 
 
-  /* ПОКАЗ ТОВАРОВ */
+  /* ========================================
+     ЗАГРУЗКА ТОВАРОВ ИЗ SUPABASE
+  ======================================== */
 
-  function renderProducts(list = products) {
+  async function loadProducts() {
 
-    const container = document.getElementById("products");
+    console.log("Проверяем Supabase...");
 
-    container.innerHTML = "";
+    const { data, error } =
+      await supabaseClient
+        .from("products")
+        .select("*")
+        .order("id", {
+          ascending: true
+        });
 
-    if (list.length === 0) {
 
-      container.innerHTML = `
-        <div class="empty">
-          <div class="empty-icon">🔎</div>
-          Товар не найден
-        </div>
-      `;
+    if (error) {
+
+      console.error(
+        "Ошибка Supabase:",
+        error
+      );
+
+      console.log(
+        "Используем тестовые товары."
+      );
+
+      renderProducts();
 
       return;
     }
+
+
+    console.log(
+      "Товары из Supabase:",
+      data
+    );
+
+
+    if (data && data.length > 0) {
+
+      products.length = 0;
+
+
+      data.forEach(product => {
+
+        products.push({
+
+          id: product.id,
+
+          name: product.name,
+
+          price: Number(product.price),
+
+          category: product.category,
+
+          icon: product.icon || "📦"
+
+        });
+
+      });
+
+    }
+
+
+    renderProducts();
+
+  }
+
+
+  /* ========================================
+     ПОКАЗ ТОВАРОВ
+  ======================================== */
+
+  function renderProducts(
+    list = products
+  ) {
+
+    const container =
+      document.getElementById(
+        "products"
+      );
+
+
+    container.innerHTML = "";
+
+
+    if (
+      !list ||
+      list.length === 0
+    ) {
+
+      container.innerHTML = `
+
+        <div class="empty">
+
+          <div class="empty-icon">
+            🔎
+          </div>
+
+          Товар не найден
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
 
     list.forEach(product => {
 
@@ -665,8 +872,9 @@
         <div class="product">
 
           <div class="product-image">
-            ${product.icon}
+            ${product.icon || "📦"}
           </div>
+
 
           <div class="product-info">
 
@@ -674,9 +882,11 @@
               ${product.name}
             </div>
 
+
             <div class="product-price">
-              ${product.price.toLocaleString("ru-RU")} ₽
+              ${Number(product.price).toLocaleString("ru-RU")} ₽
             </div>
+
 
             <button
               class="product-button"
@@ -696,13 +906,28 @@
   }
 
 
-  /* ДОБАВИТЬ В КОРЗИНУ */
+  /* ========================================
+     КОРЗИНА
+  ======================================== */
 
   function addToCart(id) {
 
-    const product = products.find(p => p.id === id);
+    const product =
+      products.find(
+        p => p.id === id
+      );
 
-    const existing = cart.find(p => p.id === id);
+
+    if (!product) {
+      return;
+    }
+
+
+    const existing =
+      cart.find(
+        p => p.id === id
+      );
+
 
     if (existing) {
 
@@ -711,60 +936,106 @@
     } else {
 
       cart.push({
+
         ...product,
+
         quantity: 1
+
       });
 
     }
 
+
     updateCartCount();
 
-    tg.HapticFeedback.impactOccurred("light");
+
+    if (
+      tg.HapticFeedback &&
+      tg.HapticFeedback.impactOccurred
+    ) {
+
+      tg.HapticFeedback
+        .impactOccurred("light");
+
+    }
 
   }
 
 
-  /* КОЛИЧЕСТВО */
+  /* ========================================
+     СЧЁТЧИК КОРЗИНЫ
+  ======================================== */
 
   function updateCartCount() {
 
-    const count = cart.reduce(
-      (sum, item) => sum + item.quantity,
-      0
-    );
+    const count =
+      cart.reduce(
+        (sum, item) =>
+          sum + item.quantity,
+        0
+      );
 
-    const badge = document.getElementById("cartCount");
+
+    const badge =
+      document.getElementById(
+        "cartCount"
+      );
+
 
     badge.textContent = count;
 
+
     badge.style.display =
-      count > 0 ? "flex" : "none";
+      count > 0
+        ? "flex"
+        : "none";
 
   }
 
 
-  /* КОРЗИНА */
+  /* ========================================
+     ОТОБРАЖЕНИЕ КОРЗИНЫ
+  ======================================== */
 
   function renderCart() {
 
     const container =
-      document.getElementById("cartItems");
+      document.getElementById(
+        "cartItems"
+      );
+
 
     const total =
-      document.getElementById("cartTotal");
+      document.getElementById(
+        "cartTotal"
+      );
+
 
     container.innerHTML = "";
 
-    if (cart.length === 0) {
+
+    if (
+      cart.length === 0
+    ) {
 
       container.innerHTML = `
+
         <div class="empty">
-          <div class="empty-icon">🛒</div>
+
+          <div class="empty-icon">
+            🛒
+          </div>
+
           Корзина пока пустая
+
           <br><br>
+
           Добавьте понравившийся товар
+
         </div>
+
       `;
+
 
       total.innerHTML = "";
 
@@ -778,15 +1049,19 @@
 
     cart.forEach(item => {
 
-      sum += item.price * item.quantity;
+      sum +=
+        Number(item.price) *
+        item.quantity;
+
 
       container.innerHTML += `
 
         <div class="cart-item">
 
           <div class="cart-item-icon">
-            ${item.icon}
+            ${item.icon || "📦"}
           </div>
+
 
           <div class="cart-item-info">
 
@@ -794,19 +1069,32 @@
               ${item.name}
             </div>
 
+
             <div class="cart-item-price">
-              ${(item.price * item.quantity).toLocaleString("ru-RU")} ₽
+              ${(
+                Number(item.price) *
+                item.quantity
+              ).toLocaleString("ru-RU")} ₽
             </div>
+
 
             <div class="quantity">
 
-              <button onclick="changeQuantity(${item.id}, -1)">
+              <button
+                onclick="changeQuantity(${item.id}, -1)"
+              >
                 −
               </button>
 
-              <span>${item.quantity}</span>
 
-              <button onclick="changeQuantity(${item.id}, 1)">
+              <span>
+                ${item.quantity}
+              </span>
+
+
+              <button
+                onclick="changeQuantity(${item.id}, 1)"
+              >
                 +
               </button>
 
@@ -826,14 +1114,30 @@
       <div class="total-box">
 
         <div class="total-row">
-          <span>Товары</span>
-          <span>${sum.toLocaleString("ru-RU")} ₽</span>
+
+          <span>
+            Товары
+          </span>
+
+          <span>
+            ${sum.toLocaleString("ru-RU")} ₽
+          </span>
+
         </div>
 
+
         <div class="total-row">
-          <span>Итого</span>
-          <span>${sum.toLocaleString("ru-RU")} ₽</span>
+
+          <span>
+            Итого
+          </span>
+
+          <span>
+            ${sum.toLocaleString("ru-RU")} ₽
+          </span>
+
         </div>
+
 
         <button
           class="order-button"
@@ -849,21 +1153,40 @@
   }
 
 
-  /* ИЗМЕНЕНИЕ КОЛИЧЕСТВА */
+  /* ========================================
+     ИЗМЕНЕНИЕ КОЛИЧЕСТВА
+  ======================================== */
 
-  function changeQuantity(id, change) {
+  function changeQuantity(
+    id,
+    change
+  ) {
 
-    const item = cart.find(p => p.id === id);
+    const item =
+      cart.find(
+        p => p.id === id
+      );
 
-    if (!item) return;
+
+    if (!item) {
+      return;
+    }
+
 
     item.quantity += change;
 
-    if (item.quantity <= 0) {
 
-      cart = cart.filter(p => p.id !== id);
+    if (
+      item.quantity <= 0
+    ) {
+
+      cart =
+        cart.filter(
+          p => p.id !== id
+        );
 
     }
+
 
     updateCartCount();
 
@@ -872,15 +1195,24 @@
   }
 
 
-  /* ОФОРМЛЕНИЕ ЗАКАЗА */
+  /* ========================================
+     ОФОРМЛЕНИЕ ЗАКАЗА
+  ======================================== */
 
   function createOrder() {
 
-    if (cart.length === 0) return;
+    if (
+      cart.length === 0
+    ) {
+
+      return;
+
+    }
 
 
     let text =
-      "🛍 Новый заказ — Техника Лайф%0A%0A";
+      "🛍 Новый заказ — Техника Лайф\n\n";
+
 
     let total = 0;
 
@@ -888,26 +1220,35 @@
     cart.forEach(item => {
 
       const itemTotal =
-        item.price * item.quantity;
+        Number(item.price) *
+        item.quantity;
+
 
       total += itemTotal;
 
+
       text +=
-        `📱 ${item.name} × ${item.quantity} — ${itemTotal.toLocaleString("ru-RU")} ₽%0A`;
+        `📱 ${item.name} × ${item.quantity} — ${itemTotal.toLocaleString("ru-RU")} ₽\n`;
 
     });
 
 
     text +=
-      `%0A💰 Итого: ${total.toLocaleString("ru-RU")} ₽`;
+      `\n💰 Итого: ${total.toLocaleString("ru-RU")} ₽`;
+
 
     text +=
-      "%0A%0AЗдравствуйте! Хочу оформить этот заказ.";
+      "\n\nЗдравствуйте! Хочу оформить этот заказ.";
+
+
+    const encodedText =
+      encodeURIComponent(text);
 
 
     tg.showPopup({
 
-      title: "Заказ готов 🎉",
+      title:
+        "Заказ готов 🎉",
 
       message:
         "Нажмите «Написать продавцу», чтобы перейти к оплате и подтверждению заказа.",
@@ -930,10 +1271,13 @@
 
     }, function(buttonId) {
 
-      if (buttonId === "contact") {
+      if (
+        buttonId === "contact"
+      ) {
 
         window.location.href =
-          "https://t.me/kar_y0?text=" + text;
+          "https://t.me/kar_y0?text=" +
+          encodedText;
 
       }
 
@@ -942,51 +1286,93 @@
   }
 
 
-  /* СТРАНИЦЫ */
+  /* ========================================
+     СТРАНИЦЫ
+  ======================================== */
 
-  function openPage(pageId, button) {
+  function openPage(
+    pageId,
+    button
+  ) {
 
     document
       .querySelectorAll(".page")
-      .forEach(page =>
-        page.classList.remove("active")
+      .forEach(page => {
+
+        page.classList
+          .remove("active");
+
+      });
+
+
+    const page =
+      document.getElementById(
+        pageId
       );
 
-    document
-      .getElementById(pageId)
-      .classList.add("active");
+
+    if (page) {
+
+      page.classList
+        .add("active");
+
+    }
 
 
     document
       .querySelectorAll(".nav-button")
-      .forEach(btn =>
-        btn.classList.remove("active")
-      );
+      .forEach(btn => {
 
-    button.classList.add("active");
+        btn.classList
+          .remove("active");
+
+      });
+
+
+    if (button) {
+
+      button.classList
+        .add("active");
+
+    }
 
   }
 
 
+  /* ========================================
+     ОТКРЫТЬ КОРЗИНУ
+  ======================================== */
+
   function openCart() {
 
     const buttons =
-      document.querySelectorAll(".nav-button");
+      document.querySelectorAll(
+        ".nav-button"
+      );
 
-    openPage("cartPage", buttons[1]);
+
+    openPage(
+      "cartPage",
+      buttons[1]
+    );
+
 
     renderCart();
 
   }
 
 
-  /* ПОИСК */
+  /* ========================================
+     ПОИСК
+  ======================================== */
 
   function searchProducts() {
 
     const value =
       document
-        .getElementById("searchInput")
+        .getElementById(
+          "searchInput"
+        )
         .value
         .toLowerCase()
         .trim();
@@ -994,30 +1380,45 @@
 
     const filtered =
       products.filter(product =>
+
         product.name
           .toLowerCase()
           .includes(value)
+
       );
 
 
-    renderProducts(filtered);
+    renderProducts(
+      filtered
+    );
 
   }
 
 
-  /* КАТЕГОРИЯ */
+  /* ========================================
+     ФИЛЬТР КАТЕГОРИИ
+  ======================================== */
 
-  function filterCategory(category) {
+  function filterCategory(
+    category
+  ) {
 
     const filtered =
-      products.filter(product =>
-        product.category === category
+      products.filter(
+        product =>
+          product.category === category
       );
 
-    renderProducts(filtered);
+
+    renderProducts(
+      filtered
+    );
+
 
     document
-      .getElementById("products")
+      .getElementById(
+        "products"
+      )
       .scrollIntoView({
         behavior: "smooth"
       });
@@ -1025,69 +1426,39 @@
   }
 
 
-  /* ПРОФИЛЬ TELEGRAM */
+  /* ========================================
+     ПРОФИЛЬ TELEGRAM
+  ======================================== */
 
-  if (tg.initDataUnsafe &&
-      tg.initDataUnsafe.user) {
+  if (
+    tg.initDataUnsafe &&
+    tg.initDataUnsafe.user
+  ) {
 
     const user =
       tg.initDataUnsafe.user;
 
-    document.getElementById("profileName")
+
+    document
+      .getElementById(
+        "profileName"
+      )
       .textContent =
-      user.first_name ||
-      "Покупатель";
+        user.first_name ||
+        "Покупатель";
 
   }
 
 
-  /* ЗАПУСК */
-
-  renderProducts();
+  /* ========================================
+     ЗАПУСК
+  ======================================== */
 
   updateCartCount();
 
+  loadProducts();
+
 </script>
 
-</body><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const SUPABASE_URL = "https://krdhfzbinbxyketfcrdg.supabase.co";
-const SUPABASE_KEY = "sb_publishable_nDSB-nLt5u2FVp0GH8MffQ_kaJEpB0L";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-async function loadProducts() {
-  const { data, error } = await supabaseClient
-    .from("products")
-    .select("*")
-    .order("id", { ascending: true });
-
-  if (error) {
-    console.error("Ошибка Supabase:", error);
-    return;
-  }
-
-  console.log("Товары из Supabase:", data);
-
-  if (data && data.length > 0) {
-    products.length = 0;
-
-    data.forEach(product => {
-      products.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        category: product.category,
-        icon: product.icon || "📦"
-      });
-    });
-
-    renderProducts();
-  }
-}
-
-loadProducts();</script>
+</body>
 </html>
