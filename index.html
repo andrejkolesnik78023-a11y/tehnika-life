@@ -1311,7 +1311,1725 @@ button{
 <div id="toast"
      class="toast">
 </div>
-от
+
 
 <script>
-/* =================================================
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+  "https://krdhfzbinbxyketfcrdg.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_nDSB-nLt5u2FVp0GH8MffQ_kaJEpB0L";
+
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =========================================================
+   TELEGRAM
+========================================================= */
+
+const tg =
+  window.Telegram?.WebApp;
+
+if(tg){
+
+  tg.ready();
+
+  tg.expand();
+
+  try{
+    tg.setHeaderColor("#faf9f5");
+    tg.setBackgroundColor("#faf9f5");
+  }catch(e){}
+
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+const ADMIN_ID = "756164773";
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let products = [];
+
+let categories = [];
+
+let currentProduct = null;
+
+let currentCategory = "Все";
+
+let telegramUser = null;
+
+let cart = [];
+
+let favorites = [];
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", async()=>{
+
+  loadLocalData();
+
+  getTelegramUser();
+
+  await loadProducts();
+
+  await loadUser();
+
+  renderEverything();
+
+});
+
+
+/* =========================================================
+   TELEGRAM USER
+========================================================= */
+
+function getTelegramUser(){
+
+  telegramUser =
+    tg?.initDataUnsafe?.user || null;
+
+  if(!telegramUser){
+
+    telegramUser = {
+
+      id:"demo",
+
+      first_name:"Гость",
+
+      username:""
+
+    };
+
+  }
+
+}
+
+
+/* =========================================================
+   LOCAL DATA
+========================================================= */
+
+function userStorageKey(){
+
+  return "oda_store_" +
+    telegramUser.id;
+
+}
+
+function loadLocalData(){
+
+  const data =
+    JSON.parse(
+      localStorage.getItem(
+        userStorageKey()
+      ) || "{}"
+    );
+
+  cart = data.cart || [];
+
+  favorites = data.favorites || [];
+
+}
+
+function saveLocalData(){
+
+  localStorage.setItem(
+
+    userStorageKey(),
+
+    JSON.stringify({
+
+      cart,
+
+      favorites
+
+    })
+
+  );
+
+}
+
+
+/* =========================================================
+   PRODUCTS
+========================================================= */
+
+async function loadProducts(){
+
+  try{
+
+    const {data,error} =
+      await supabaseClient
+      .from("products")
+      .select("*")
+      .order("created_at",{ascending:false});
+
+    if(error) throw error;
+
+    products = data || [];
+
+    categories = [
+      "Все",
+      ...new Set(
+        products
+        .map(p=>p.category)
+        .filter(Boolean)
+      )
+    ];
+
+  }catch(error){
+
+    console.error(error);
+
+    toast("Не удалось загрузить товары");
+
+  }
+
+}
+
+
+/* =========================================================
+   USER
+========================================================= */
+
+async function loadUser(){
+
+  if(!telegramUser) return;
+
+  if(telegramUser.id === "demo"){
+
+    updateProfile();
+
+    return;
+
+  }
+
+  try{
+
+    const {data,error} =
+      await supabaseClient
+      .from("users")
+      .upsert({
+
+        telegram_id:
+          String(telegramUser.id),
+
+        first_name:
+          telegramUser.first_name || "",
+
+        last_name:
+          telegramUser.last_name || "",
+
+        username:
+          telegramUser.username || "",
+
+        avatar_url:
+          telegramUser.photo_url || "",
+
+        updated_at:
+          new Date().toISOString()
+
+      },{
+
+        onConflict:"telegram_id"
+
+      })
+      .select()
+      .single();
+
+    if(error) throw error;
+
+    if(data){
+
+      window.currentUser = data;
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "USER ERROR:",
+      error
+    );
+
+  }
+
+  updateProfile();
+
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+function updateProfile(){
+
+  const user =
+    window.currentUser;
+
+  const name =
+    user?.first_name ||
+    telegramUser?.first_name ||
+    "Пользователь";
+
+  const username =
+    user?.username ||
+    telegramUser?.username ||
+    "";
+
+  document.getElementById(
+    "profileName"
+  ).textContent = name;
+
+  document.getElementById(
+    "profileUsername"
+  ).textContent =
+    username
+      ? "@" + username
+      : "Telegram";
+
+  const avatar =
+    user?.avatar_url ||
+    telegramUser?.photo_url;
+
+  if(avatar){
+
+    document.getElementById(
+      "profileAvatar"
+    ).src = avatar;
+
+  }
+
+  const balance =
+    Number(user?.balance || 0);
+
+  document.getElementById(
+    "profileBalance"
+  ).textContent =
+    formatPrice(balance);
+
+}
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function renderEverything(){
+
+  renderCategories();
+
+  renderHomeProducts();
+
+  renderCatalogProducts();
+
+  renderFavorites();
+
+  updateCartCount();
+
+  updateProfile();
+
+  renderAdmin();
+
+}
+
+
+/* =========================================================
+   CATEGORIES
+========================================================= */
+
+function renderCategories(){
+
+  const html =
+    categories
+    .map(category=>`
+
+      <button
+        class="category ${
+          currentCategory === category
+          ? "active"
+          : ""
+        }"
+        onclick="selectCategory('${escapeAttr(category)}')">
+
+        ${escapeHtml(category)}
+
+      </button>
+
+    `)
+    .join("");
+
+  document.getElementById(
+    "homeCategories"
+  ).innerHTML = html;
+
+  document.getElementById(
+    "catalogCategories"
+  ).innerHTML = html;
+
+}
+
+
+/* =========================================================
+   CATEGORY
+========================================================= */
+
+function selectCategory(category){
+
+  currentCategory = category;
+
+  renderCategories();
+
+  renderHomeProducts();
+
+  renderCatalogProducts();
+
+}
+
+
+/* =========================================================
+   PRODUCTS
+========================================================= */
+
+function getFilteredProducts(){
+
+  let result = [...products];
+
+  if(currentCategory !== "Все"){
+
+    result =
+      result.filter(
+        p=>p.category === currentCategory
+      );
+
+  }
+
+  return result;
+
+}
+
+
+function renderHomeProducts(){
+
+  const list =
+    getFilteredProducts()
+    .slice(0,6);
+
+  document.getElementById(
+    "homeProducts"
+  ).innerHTML =
+    productsHTML(list);
+
+}
+
+
+function renderCatalogProducts(){
+
+  const list =
+    getFilteredProducts();
+
+  document.getElementById(
+    "catalogProducts"
+  ).innerHTML =
+    productsHTML(list);
+
+}
+
+
+function productsHTML(list){
+
+  if(!list.length){
+
+    return `
+      <div class="empty"
+           style="grid-column:1/-1">
+
+        <div class="empty-icon">🛍</div>
+
+        <div>Товаров пока нет</div>
+
+      </div>
+    `;
+
+  }
+
+  return list
+    .map(product=>productHTML(product))
+    .join("");
+
+}
+
+
+function productHTML(product){
+
+  const image =
+    getProductImages(product)[0];
+
+  const isFav =
+    favorites.includes(String(product.id));
+
+  return `
+
+    <div
+      class="product-card"
+      onclick="openProduct('${product.id}')">
+
+      <button
+        class="favorite-mini"
+        onclick="event.stopPropagation(); toggleFavorite('${product.id}')">
+
+        ${isFav ? "♥" : "♡"}
+
+      </button>
+
+      <img
+        class="product-image"
+        src="${escapeAttr(image)}"
+        alt="${escapeAttr(product.name || "")}"
+        loading="lazy"
+        onerror="this.src='https://placehold.co/600x600?text=Фото'">
+
+      <div class="product-info">
+
+        <div class="product-name">
+          ${escapeHtml(product.name || "Товар")}
+        </div>
+
+        <div class="product-bottom">
+
+          <div class="product-price">
+            ${formatPrice(product.price)}
+          </div>
+
+          <button
+            class="add-btn"
+            onclick="event.stopPropagation(); addToCart('${product.id}')">
+
+            +
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function searchProducts(value){
+
+  const query =
+    value.trim().toLowerCase();
+
+  if(!query){
+
+    renderHomeProducts();
+
+    return;
+
+  }
+
+  const result =
+    products.filter(product=>{
+
+      const name =
+        String(product.name || "")
+        .toLowerCase();
+
+      const description =
+        String(product.description || "")
+        .toLowerCase();
+
+      return (
+        name.includes(query) ||
+        description.includes(query)
+      );
+
+    });
+
+  document.getElementById(
+    "homeProducts"
+  ).innerHTML =
+    productsHTML(result);
+
+}
+
+
+/* =========================================================
+   PRODUCT
+========================================================= */
+
+function getProductImages(product){
+
+  let images = [];
+
+  if(Array.isArray(product.images)){
+
+    images =
+      product.images.filter(Boolean);
+
+  }
+
+  if(typeof product.images === "string"){
+
+    try{
+
+      const parsed =
+        JSON.parse(product.images);
+
+      if(Array.isArray(parsed)){
+
+        images =
+          parsed.filter(Boolean);
+
+      }
+
+    }catch(e){
+
+      images =
+        product.images
+        .split(",")
+        .map(x=>x.trim())
+        .filter(Boolean);
+
+    }
+
+  }
+
+  if(product.image_url){
+
+    if(!images.includes(product.image_url)){
+
+      images.unshift(
+        product.image_url
+      );
+
+    }
+
+  }
+
+  if(!images.length){
+
+    images = [
+      "https://placehold.co/800x800?text=Фото"
+    ];
+
+  }
+
+  return images;
+
+}
+
+
+function openProduct(id){
+
+  const product =
+    products.find(
+      p=>String(p.id) === String(id)
+    );
+
+  if(!product) return;
+
+  currentProduct = product;
+
+  const images =
+    getProductImages(product);
+
+  document.getElementById(
+    "galleryTrack"
+  ).innerHTML =
+    images.map(image=>`
+
+      <img
+        class="gallery-image"
+        src="${escapeAttr(image)}"
+        onerror="this.src='https://placehold.co/800x800?text=Фото'">
+
+    `).join("");
+
+  document.getElementById(
+    "modalTitle"
+  ).textContent =
+    product.name || "Товар";
+
+  document.getElementById(
+    "modalPrice"
+  ).textContent =
+    formatPrice(product.price);
+
+  document.getElementById(
+    "modalDescription"
+  ).textContent =
+    product.description ||
+    "Описание товара отсутствует.";
+
+  updateModalFavorite();
+
+  updatePhotoCounter(0,images.length);
+
+  const modal =
+    document.getElementById(
+      "productModal"
+    );
+
+  modal.classList.add("open");
+
+  document.body.style.overflow =
+    "hidden";
+
+}
+
+
+function closeProduct(){
+
+  document.getElementById(
+    "productModal"
+  ).classList.remove("open");
+
+  document.body.style.overflow =
+    "";
+
+  currentProduct = null;
+
+}
+
+
+function modalBackground(event){
+
+  if(
+    event.target.id ===
+    "productModal"
+  ){
+
+    closeProduct();
+
+  }
+
+}
+
+
+/* =========================================================
+   SWIPE GALLERY
+========================================================= */
+
+function galleryScroll(){
+
+  const track =
+    document.getElementById(
+      "galleryTrack"
+    );
+
+  if(!track) return;
+
+  const width =
+    track.clientWidth;
+
+  if(!width) return;
+
+  const index =
+    Math.round(
+      track.scrollLeft / width
+    );
+
+  const total =
+    track.children.length;
+
+  updatePhotoCounter(
+    index,
+    total
+  );
+
+}
+
+
+function updatePhotoCounter(
+  index,
+  total
+){
+
+  document.getElementById(
+    "photoCounter"
+  ).textContent =
+    `${index + 1} / ${total}`;
+
+}
+
+
+/* =========================================================
+   FAVORITES
+========================================================= */
+
+function toggleFavorite(id){
+
+  id = String(id);
+
+  const index =
+    favorites.indexOf(id);
+
+  if(index >= 0){
+
+    favorites.splice(index,1);
+
+    toast("Удалено из избранного");
+
+  }else{
+
+    favorites.push(id);
+
+    toast("Добавлено в избранное ❤️");
+
+  }
+
+  saveLocalData();
+
+  renderEverything();
+
+  updateModalFavorite();
+
+}
+
+
+function toggleFavoriteCurrent(){
+
+  if(!currentProduct) return;
+
+  toggleFavorite(
+    String(currentProduct.id)
+  );
+
+}
+
+
+function updateModalFavorite(){
+
+  if(!currentProduct) return;
+
+  const isFav =
+    favorites.includes(
+      String(currentProduct.id)
+    );
+
+  document.getElementById(
+    "modalFavorite"
+  ).textContent =
+    isFav ? "♥" : "♡";
+
+  document.getElementById(
+    "modalFavorite"
+  ).style.color =
+    isFav ? "#111" : "";
+
+}
+
+
+function renderFavorites(){
+
+  const list =
+    products.filter(
+      p=>favorites.includes(
+        String(p.id)
+      )
+    );
+
+  const container =
+    document.getElementById(
+      "favoritesProducts"
+    );
+
+  if(!list.length){
+
+    container.innerHTML = `
+
+      <div class="empty"
+           style="grid-column:1/-1">
+
+        <div class="empty-icon">♡</div>
+
+        <div>
+          Здесь появятся ваши любимые товары
+        </div>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+  container.innerHTML =
+    productsHTML(list);
+
+}
+
+
+/* =========================================================
+   CART
+========================================================= */
+
+function addToCart(id){
+
+  id = String(id);
+
+  const item =
+    cart.find(
+      x=>String(x.id) === id
+    );
+
+  if(item){
+
+    item.qty++;
+
+  }else{
+
+    cart.push({
+
+      id:id,
+
+      qty:1
+
+    });
+
+  }
+
+  saveLocalData();
+
+  updateCartCount();
+
+  toast("Товар добавлен в корзину 🛒");
+
+}
+
+
+function addCurrentToCart(){
+
+  if(!currentProduct) return;
+
+  addToCart(
+    String(currentProduct.id)
+  );
+
+  closeProduct();
+
+}
+
+
+function removeFromCart(id){
+
+  cart =
+    cart.filter(
+      x=>String(x.id) !== String(id)
+    );
+
+  saveLocalData();
+
+  renderCart();
+
+  updateCartCount();
+
+}
+
+
+function changeQty(id,delta){
+
+  const item =
+    cart.find(
+      x=>String(x.id) === String(id)
+    );
+
+  if(!item) return;
+
+  item.qty += delta;
+
+  if(item.qty <= 0){
+
+    removeFromCart(id);
+
+    return;
+
+  }
+
+  saveLocalData();
+
+  renderCart();
+
+  updateCartCount();
+
+}
+
+
+function getCartItems(){
+
+  return cart
+    .map(item=>{
+
+      const product =
+        products.find(
+          p=>String(p.id) === String(item.id)
+        );
+
+      if(!product) return null;
+
+      return {
+
+        ...item,
+
+        product
+
+      };
+
+    })
+    .filter(Boolean);
+
+}
+
+
+function updateCartCount(){
+
+  const count =
+    cart.reduce(
+      (sum,item)=>
+        sum + Number(item.qty || 0),
+      0
+    );
+
+  const button =
+    document.querySelector(
+      ".cart-btn"
+    );
+
+  const badge =
+    document.getElementById(
+      "cartCount"
+    );
+
+  badge.textContent = count;
+
+  if(count > 0){
+
+    button.classList.add(
+      "has-items"
+    );
+
+  }else{
+
+    button.classList.remove(
+      "has-items"
+    );
+
+  }
+
+}
+
+
+function openCart(){
+
+  renderCart();
+
+  document.getElementById(
+    "cartModal"
+  ).classList.add("open");
+
+  document.body.style.overflow =
+    "hidden";
+
+}
+
+
+function closeCart(){
+
+  document.getElementById(
+    "cartModal"
+  ).classList.remove("open");
+
+  document.body.style.overflow =
+    "";
+
+}
+
+
+function cartBackground(event){
+
+  if(
+    event.target.id ===
+    "cartModal"
+  ){
+
+    closeCart();
+
+  }
+
+}
+
+
+function renderCart(){
+
+  const items =
+    getCartItems();
+
+  const list =
+    document.getElementById(
+      "cartList"
+    );
+
+  const total =
+    document.getElementById(
+      "cartTotal"
+    );
+
+  if(!items.length){
+
+    list.innerHTML = `
+
+      <div class="empty">
+
+        <div class="empty-icon">🛒</div>
+
+        <div>
+          Корзина пока пустая
+        </div>
+
+      </div>
+
+    `;
+
+    total.innerHTML = "";
+
+    return;
+
+  }
+
+  list.innerHTML =
+    `<div class="cart-list">
+
+      ${
+        items.map(item=>{
+
+          const image =
+            getProductImages(
+              item.product
+            )[0];
+
+          return `
+
+            <div class="cart-item">
+
+              <img
+                src="${escapeAttr(image)}"
+                onerror="this.src='https://placehold.co/100x100?text=Фото'">
+
+              <div class="cart-item-info">
+
+                <div class="cart-item-name">
+                  ${escapeHtml(
+                    item.product.name
+                  )}
+                </div>
+
+                <div class="cart-item-price">
+                  ${formatPrice(
+                    Number(item.product.price)
+                    *
+                    Number(item.qty)
+                  )}
+                </div>
+
+                <div class="qty">
+
+                  <button
+                    onclick="changeQty('${item.id}',-1)">
+                    −
+                  </button>
+
+                  <b>${item.qty}</b>
+
+                  <button
+                    onclick="changeQty('${item.id}',1)">
+                    +
+                  </button>
+
+                </div>
+
+              </div>
+
+              <button
+                class="admin-small"
+                onclick="removeFromCart('${item.id}')">
+                ×
+              </button>
+
+            </div>
+
+          `;
+
+        }).join("")
+
+      }
+
+    </div>`;
+
+  const totalPrice =
+    items.reduce(
+      (sum,item)=>
+        sum +
+        Number(item.product.price || 0)
+        *
+        Number(item.qty || 0),
+      0
+    );
+
+  total.innerHTML = `
+
+    <div class="cart-total">
+
+      <div class="total-row">
+
+        <span>Итого</span>
+
+        <span class="total-price">
+          ${formatPrice(totalPrice)}
+        </span>
+
+      </div>
+
+      <button
+        class="checkout"
+        onclick="checkout()">
+
+        Оформить заказ
+
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+function checkout(){
+
+  if(!cart.length){
+
+    toast("Корзина пустая");
+
+    return;
+
+  }
+
+  toast(
+    "Заказ скоро можно будет оформить 💳"
+  );
+
+}
+
+
+/* =========================================================
+   PAGES
+========================================================= */
+
+function showPage(page){
+
+  document
+    .querySelectorAll(".page")
+    .forEach(el=>
+      el.classList.remove("active")
+    );
+
+  const pageElement =
+    document.getElementById(
+      page + "Page"
+    );
+
+  if(pageElement){
+
+    pageElement.classList.add(
+      "active"
+    );
+
+  }
+
+  document
+    .querySelectorAll(".nav-item")
+    .forEach(item=>{
+
+      item.classList.toggle(
+        "active",
+        item.dataset.page === page
+      );
+
+    });
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+  if(page === "favorites"){
+
+    renderFavorites();
+
+  }
+
+  if(page === "profile"){
+
+    updateProfile();
+
+    renderAdmin();
+
+  }
+
+}
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+function isAdmin(){
+
+  return String(
+    telegramUser?.id
+  ) === String(ADMIN_ID);
+
+}
+
+
+async function renderAdmin(){
+
+  const container =
+    document.getElementById(
+      "adminPanel"
+    );
+
+  if(!isAdmin()){
+
+    container.innerHTML = "";
+
+    return;
+
+  }
+
+  container.innerHTML = `
+
+    <div class="admin">
+
+      <div class="admin-title">
+        Админ-панель
+      </div>
+
+      <div class="admin-card">
+
+        <b>Пользователи</b>
+
+        <div id="adminUsers">
+          Загрузка...
+        </div>
+
+      </div>
+
+      <div class="admin-card">
+
+        <b>Начислить баланс</b>
+
+        <input
+          id="balanceUserId"
+          class="admin-input"
+          placeholder="Telegram ID пользователя">
+
+        <input
+          id="balanceAmount"
+          class="admin-input"
+          type="number"
+          placeholder="Сумма, ₽">
+
+        <button
+          class="admin-submit"
+          onclick="changeUserBalance()">
+
+          Начислить баланс
+
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+  await loadAdminUsers();
+
+}
+
+
+async function loadAdminUsers(){
+
+  const box =
+    document.getElementById(
+      "adminUsers"
+    );
+
+  if(!box) return;
+
+  try{
+
+    const {data,error} =
+      await supabaseClient
+      .from("users")
+      .select("*")
+      .order("created_at",{
+        ascending:false
+      });
+
+    if(error) throw error;
+
+    if(!data?.length){
+
+      box.innerHTML =
+        "<div style='padding:15px;color:#999'>Пользователей пока нет</div>";
+
+      return;
+
+    }
+
+    box.innerHTML =
+      data.map(user=>`
+
+        <div class="admin-row">
+
+          <div>
+
+            <div class="admin-user-name">
+
+              ${escapeHtml(
+                user.first_name ||
+                user.username ||
+                "Пользователь"
+              )}
+
+            </div>
+
+            <div class="admin-user-id">
+
+              ID:
+              ${escapeHtml(
+                String(user.telegram_id)
+              )}
+
+              ·
+
+              Баланс:
+              ${formatPrice(
+                user.balance || 0
+              )}
+
+            </div>
+
+          </div>
+
+          <div class="admin-actions">
+
+            <button
+              class="admin-small"
+              onclick="quickBalance('${user.telegram_id}',100)">
+              +100
+            </button>
+
+            <button
+              class="admin-small ${
+                user.blocked
+                ? ""
+                : "danger"
+              }"
+              onclick="toggleBlock('${user.telegram_id}',${!user.blocked})">
+
+              ${
+                user.blocked
+                ? "Разблок."
+                : "Блок"
+              }
+
+            </button>
+
+          </div>
+
+        </div>
+
+      `).join("");
+
+  }catch(error){
+
+    console.error(error);
+
+    box.innerHTML =
+      "<div style='color:#999'>Ошибка загрузки</div>";
+
+  }
+
+}
+
+
+async function changeUserBalance(){
+
+  const id =
+    document.getElementById(
+      "balanceUserId"
+    ).value.trim();
+
+  const amount =
+    Number(
+      document.getElementById(
+        "balanceAmount"
+      ).value
+    );
+
+  if(!id || !amount){
+
+    toast("Заполни ID и сумму");
+
+    return;
+
+  }
+
+  if(!isAdmin()){
+
+    toast("Нет доступа");
+
+    return;
+
+  }
+
+  try{
+
+    const {data,error} =
+      await supabaseClient
+      .from("users")
+      .select("balance")
+      .eq("telegram_id",id)
+      .single();
+
+    if(error) throw error;
+
+    const newBalance =
+      Number(data.balance || 0)
+      +
+      amount;
+
+    const result =
+      await supabaseClient
+      .from("users")
+      .update({
+        balance:newBalance
+      })
+      .eq("telegram_id",id);
+
+    if(result.error)
+      throw result.error;
+
+    toast(
+      "Баланс изменён 💰"
+    );
+
+    await loadAdminUsers();
+
+  }catch(error){
+
+    console.error(error);
+
+    toast(
+      "Пользователь не найден"
+    );
+
+  }
+
+}
+
+
+async function quickBalance(
+  telegramId,
+  amount
+){
+
+  if(!isAdmin()) return;
+
+  try{
+
+    const {data,error} =
+      await supabaseClient
+      .from("users")
+      .select("balance")
+      .eq(
+        "telegram_id",
+        String(telegramId)
+      )
+      .single();
+
+    if(error) throw error;
+
+    const result =
+      await supabaseClient
+      .from("users")
+      .update({
+
+        balance:
+          Number(data.balance || 0)
+          +
+          Number(amount)
+
+      })
+      .eq(
+        "telegram_id",
+        String(telegramId)
+      );
+
+    if(result.error)
+      throw result.error;
+
+    toast(
+      `Начислено ${amount} ₽`
+    );
+
+    await loadAdminUsers();
+
+  }catch(error){
+
+    console.error(error);
+
+    toast("Ошибка");
+
+  }
+
+}
+
+
+async function toggleBlock(
+  telegramId,
+  blocked
+){
+
+  if(!isAdmin()) return;
+
+  try{
+
+    const result =
+      await supabaseClient
+      .from("users")
+      .update({
+        blocked:Boolean(blocked)
+      })
+      .eq(
+        "telegram_id",
+        String(telegramId)
+      );
+
+    if(result.error)
+      throw result.error;
+
+    toast(
+      blocked
+      ? "Пользователь заблокирован"
+      : "Пользователь разблокирован"
+    );
+
+    await loadAdminUsers();
+
+  }catch(error){
+
+    console.error(error);
+
+    toast("Ошибка");
+
+  }
+
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function formatPrice(value){
+
+  return (
+    Number(value || 0)
+    .toLocaleString("ru-RU")
+    + " ₽"
+  );
+
+}
+
+
+function toast(message){
+
+  const el =
+    document.getElementById(
+      "toast"
+    );
+
+  el.textContent = message;
+
+  el.classList.add("show");
+
+  clearTimeout(
+    window.toastTimer
+  );
+
+  window.toastTimer =
+    setTimeout(()=>{
+
+      el.classList.remove("show");
+
+    },1800);
+
+}
+
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+function escapeAttr(value){
+
+  return escapeHtml(value);
+
+}
+
+</script>
+
+</body>
+</html>
